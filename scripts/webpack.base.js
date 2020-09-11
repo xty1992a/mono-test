@@ -7,21 +7,22 @@ module.exports = {
   context: utils.root('.'),
   entry: {},
   output: {
-    path: utils.root('dist')
+	path: utils.root('dist')
   },
   resolve: {
-    alias: {
-      'site': utils.root('packages')
-	}
+	alias: {
+	  'site': utils.root('packages'),
+	},
+	modules: PRODUCTION ? [] : ['nodule_modules',utils.packages('dll')]
   },
   module: {
-    rules: [
+	rules: [
 	  {
-	    test: /\.js$/,
+		test: /\.js$/,
 		loader: 'babel-loader'
 	  },
 	  {
-	    test: /\.vue$/,
+		test: /\.vue$/,
 		loader: 'vue-loader'
 	  },
 	  {
@@ -37,16 +38,19 @@ module.exports = {
 		},
 	  },
 	  {
-	    test: /\.less/,
+		test: /\.less/,
 		loader: [
-			'style-loader',
-			'postcss-loader',
-			'less-loader',
+		  'style-loader',
+		  'postcss-loader',
+		  'less-loader',
 		]
 	  }
 	]
   },
+  externals: PRODUCTION ? {
+	Vue: 'SITE_DLL.vue'
+  } : {},
   plugins: [
-  	new VueLoader()
+	new VueLoader()
   ]
-}
+};
