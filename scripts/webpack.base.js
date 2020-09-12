@@ -7,7 +7,7 @@ module.exports = {
   context: utils.root("."),
   entry: {},
   output: {
-    path: utils.root("dist")
+    path: utils.root("dist"),
   },
   devtool: "source-map",
   resolve: {
@@ -19,11 +19,11 @@ module.exports = {
       {
         test: /\.js$/,
         exclude: /node_modules/,
-        loader: "babel-loader"
+        loader: "babel-loader",
       },
       {
         test: /\.vue$/,
-        loader: "vue-loader"
+        loader: "vue-loader",
       },
       {
         test: /\.(jpe?g|png|gif)$/,
@@ -39,27 +39,18 @@ module.exports = {
       },
       {
         test: /\.css$/,
-        use: [
-          "style-loader",
-          "css-loader",
-          "postcss-loader",
-        ]
+        use: ["style-loader", "css-loader", "postcss-loader"],
       },
       {
         test: /\.less$/,
-        use: [
-          "style-loader",
-          "css-loader",
-          "postcss-loader",
-          "less-loader"
-        ]
+        use: ["style-loader", "css-loader", "postcss-loader", "less-loader"],
       },
-    ]
+    ],
   },
-  externals: PRODUCTION ? {
-    vue: "SITE_DLL.Vue"
-  } : {},
-  plugins: [
-    new VueLoader()
-  ]
+  externals: PRODUCTION
+    ? {
+        vue: "SITE_DLL.Vue",
+      }
+    : {},
+  plugins: [new VueLoader()],
 };

@@ -1,6 +1,6 @@
 /*
-* 查询指定路径下的子路径,返回其中package.json中包含 isBusinessModule 为true的目录
-* */
+ * 查询指定路径下的子路径,返回其中package.json中包含 isBusinessModule 为true的目录
+ * */
 const utils = require("../utils");
 const fs = require("fs");
 const path = require("path");
@@ -11,14 +11,14 @@ const path = require("path");
 const dftEntry = require("../alias").entry;
 
 function handlePackages(modules) {
-  return new Promise(async resolve => {
+  return new Promise(async (resolve) => {
     const data = [];
     while (modules.length) {
       const module = modules.pop();
       const config = await createConfig(module);
       data.push(config);
     }
-    resolve({success: true, data});
+    resolve({ success: true, data });
   });
 }
 
@@ -28,7 +28,7 @@ async function createConfig(module) {
   let config = null;
   if (existConfig.success) {
     const local = await createLocalConfig(localCfg);
-    config = fmtConfig({module, ...local});
+    config = fmtConfig({ module, ...local });
   } else {
     config = createDftConfig(module);
   }
@@ -39,16 +39,16 @@ async function createConfig(module) {
 function createDftConfig(module) {
   const dir = utils.packages(module);
 
-  return new Promise(async resolve => {
+  return new Promise(async (resolve) => {
     const pages = await utils.readdir(path.resolve(dir, "pages"));
     if (!pages.success) {
       console.error(`读取${dir}失败，请检查`, pages.error);
       return resolve(null);
     }
     const entries = pages.data.reduce((map, page) => {
-      return {...map, [page]: utils.copy(dftEntry)};
+      return { ...map, [page]: utils.copy(dftEntry) };
     }, {});
-    resolve({module, entries});
+    resolve({ module, entries });
   });
 }
 
@@ -72,10 +72,10 @@ function fmtConfig(config) {
       [page]: {
         ...dftEntry,
         ...old[page],
-      }
+      },
     };
   }, {});
-  return {...config, entries};
+  return { ...config, entries };
 }
 
 // endregion
@@ -83,9 +83,9 @@ function fmtConfig(config) {
 // region 在指定目录下搜寻packages
 // 即package.json中包含 isBusinessModule 字段的目录
 function findPackages(directory) {
-  return new Promise(async resolve => {
+  return new Promise(async (resolve) => {
     const dirs = await utils.readdir(directory);
-    if (!dirs.success) return resolve({success: false, data: []});
+    if (!dirs.success) return resolve({ success: false, data: [] });
     try {
       const data = [];
 
@@ -98,9 +98,9 @@ function findPackages(directory) {
         if (!pkg["isBusinessModule"]) continue;
         data.push(dir);
       }
-      resolve({success: true, data});
+      resolve({ success: true, data });
     } catch (error) {
-      resolve({success: false, error});
+      resolve({ success: false, error });
     }
   });
 }
@@ -108,6 +108,5 @@ function findPackages(directory) {
 // endregion
 module.exports = {
   handlePackages,
-  findPackages
+  findPackages,
 };
-

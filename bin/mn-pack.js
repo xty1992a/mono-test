@@ -35,12 +35,12 @@ async function askPackage(packages) {
         message: "请选择需要编译的模块",
         type: "checkbox",
         choices: packages,
-        default: []
-      }
+        default: [],
+      },
     ]);
     console.log(answers);
-    return {success: true, data: answers.packages};
+    return { success: true, data: answers.packages };
   } catch (e) {
-    return {success: false, error: e};
+    return { success: false, error: e };
   }
 }
