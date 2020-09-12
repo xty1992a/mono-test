@@ -5,6 +5,9 @@ module.exports = function () {
     entries: {
       detail: {
         html: "@view/Pay/list.html",
+        scripts: [
+          "https://unpkg.com/eruda@2.3.3/eruda.js"
+        ]
       },
     },
   };

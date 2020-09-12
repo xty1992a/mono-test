@@ -72,6 +72,8 @@ function fmtConfig(config) {
       [page]: {
         ...dftEntry,
         ...old[page],
+        styles: [...dftEntry.styles, ...(old[page].styles || [])],
+        scripts: [...dftEntry.scripts, ...(old[page].scripts || [])],
       },
     };
   }, {});
