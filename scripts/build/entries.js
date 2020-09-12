@@ -8,17 +8,17 @@ const path = require("path");
 // region 为指定的packages生成配置
 // 每个package目录，如果包含mono.config.js，则用mono.config覆盖默认配置
 // 否则基于目录下的pages中的子目录作为
-const dftEntry = require("../alias").entry;
+const dftEntry = require("../alias").entry();
 
 function handlePackages(modules) {
   return new Promise(async (resolve) => {
     const data = [];
     while (modules.length) {
-      const module = modules.pop();
+      const module = modules.shift();
       const config = await createConfig(module);
       data.push(config);
     }
-    resolve({ success: true, data });
+    resolve({success: true, data});
   });
 }
 
@@ -28,7 +28,7 @@ async function createConfig(module) {
   let config = null;
   if (existConfig.success) {
     const local = await createLocalConfig(localCfg);
-    config = fmtConfig({ module, ...local });
+    config = fmtConfig({module, ...local});
   } else {
     config = createDftConfig(module);
   }
@@ -46,9 +46,9 @@ function createDftConfig(module) {
       return resolve(null);
     }
     const entries = pages.data.reduce((map, page) => {
-      return { ...map, [page]: utils.copy(dftEntry) };
+      return {...map, [page]: utils.copy(dftEntry)};
     }, {});
-    resolve({ module, entries });
+    resolve({module, entries});
   });
 }
 
@@ -75,7 +75,7 @@ function fmtConfig(config) {
       },
     };
   }, {});
-  return { ...config, entries };
+  return {...config, entries};
 }
 
 // endregion
@@ -85,7 +85,7 @@ function fmtConfig(config) {
 function findPackages(directory) {
   return new Promise(async (resolve) => {
     const dirs = await utils.readdir(directory);
-    if (!dirs.success) return resolve({ success: false, data: [] });
+    if (!dirs.success) return resolve({success: false, data: []});
     try {
       const data = [];
 
@@ -98,9 +98,9 @@ function findPackages(directory) {
         if (!pkg["isBusinessModule"]) continue;
         data.push(dir);
       }
-      resolve({ success: true, data });
+      resolve({success: true, data});
     } catch (error) {
-      resolve({ success: false, error });
+      resolve({success: false, error});
     }
   });
 }

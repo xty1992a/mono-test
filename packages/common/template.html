@@ -1,19 +1,19 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <title>Title</title>
-    <script
-      type="text/javascript"
-      src="https://unpkg.com/vue@2.6.12/dist/vue.js"
-    ></script>
-    <script type="text/javascript">
-      window.SITE_DLL = {
-        Vue: window.Vue,
-      };
-    </script>
-  </head>
-  <body>
-    <div id="app"></div>
-  </body>
+<head>
+  <meta charset="UTF-8"/>
+  <title><%= htmlWebpackPlugin.options.title %></title>
+
+  <% for (var i = 0; i < htmlWebpackPlugin.options.scripts.length; i++) { %>
+  <script type="text/javascript" src="<%= htmlWebpackPlugin.options.scripts[i] %>"></script>
+  <% } %>
+
+  <% for (var i = 0; i < htmlWebpackPlugin.options.styles.length; i++) { %>
+  <link rel="stylesheet" href="<%= htmlWebpackPlugin.options.styles[i] %>">
+  <% } %>
+
+</head>
+<body>
+<div id="app"></div>
+</body>
 </html>

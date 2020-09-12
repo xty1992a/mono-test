@@ -6,6 +6,7 @@
   },
   "scripts": {
     "build": "node ./bin/mn.js pack --build",
+    "dll": "node ./bin/mn.js dll",
     "dev": "node ./bin/mn.js pack --dev"
   },
   "husky": {
@@ -44,7 +45,10 @@
     "webpack-dev-server": "^3.11.0",
     "webpack-merge": "^5.1.4"
   },
-  "dependencies": {},
+  "dependencies": {
+    "dayjs": "^1.8.35",
+    "vue": "^2.6.12"
+  },
   "browserslist": [
     "last 2 versions",
     "> 1%"

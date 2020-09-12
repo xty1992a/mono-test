@@ -7,7 +7,7 @@ const alias = {
   "@packages": (f) => path.join(utils.root("packages"), f),
 };
 
-function format({ pathString, module, name }) {
+function format({pathString, module, name}) {
   pathString = pathString.replace("[module]", module).replace("[name]", name);
 
   const keys = Object.keys(alias);
@@ -22,16 +22,23 @@ function format({ pathString, module, name }) {
   return pathString;
 }
 
-const dftEntry = {
-  output: "@output/[name]/index.js", // js输出路径
-  html: "@view/[module]/[name].html", // html输出路径
-  template: "@packages/common/template.html", // html模版
-  styles: [], // 加到head中的link标签资源路径 ， 指定template时无效
-  scripts: [], // 加到head中的script标签资源路径
-};
 
 module.exports = {
   alias,
   format,
-  entry: dftEntry,
+  entry: () => {
+    const dllManifest = require("./dll/manifest.json");
+
+    return {
+      output: "@output/[name]/index.js", // js输出路径
+      html: "@view/[module]/[name].html", // html输出路径
+      template: "@packages/common/template.html", // html模版
+      styles: [
+        ...dllManifest.styles
+      ], // 加到head中的link标签资源路径 ， 指定template时无效
+      scripts: [
+        ...dllManifest.scripts
+      ], // 加到head中的script标签资源路径
+    };
+  },
 };

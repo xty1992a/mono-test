@@ -1,17 +1,18 @@
 const base = require("../webpack.base");
-const { merge } = require("webpack-merge");
+const {merge} = require("webpack-merge");
 const alias = require("../alias");
 const utils = require("../utils");
 const path = require("path");
-const { handlePackages } = require("./entries");
+const {handlePackages} = require("./entries");
 const production = process.env.NODE_ENV === "production";
-const { CleanWebpackPlugin } = require("clean-webpack-plugin");
+const {CleanWebpackPlugin} = require("clean-webpack-plugin");
 
 module.exports = async function (packages) {
   console.time("编译完成");
   const configs = await handlePackages(packages);
   if (!configs.success) return;
 
+  // 模块依次串行打包，后续可考虑队列形式，同时打包若干个模块
   const taskConfigs = configs.data.map((c) => createWebpackConfig(c));
 
   while (taskConfigs.length) {
@@ -47,6 +48,7 @@ function createWebpackConfig(mono) {
   const config = merge(base, {
     entry,
     output: {
+      // 每个
       path: alias.alias["@output"](mono.module),
       filename: "[name].js",
       chunkFilename: "chunks/[name]_[chunkhash:8].js",
@@ -70,23 +72,25 @@ function runWebpack(config) {
           error = stats.toJson().errors;
         }
         console.error(error);
-        return resolve({ success: false, error });
+        return resolve({success: false, error});
       }
-      resolve({ success: true, data: stats });
+      resolve({success: true, data: stats});
     });
   });
 }
 
 const HtmlPlugin = require("html-webpack-plugin");
 
-function createHtmlPlugin({ config, module, name }) {
-  const fmt = (p) => alias.format({ pathString: p, module, name });
-  return new HtmlPlugin({
+function createHtmlPlugin({config, module, name}) {
+  const fmt = (p) => alias.format({pathString: p, module, name});
+
+  const options = {
     chunks: [name],
     title: name || config.title,
     template: fmt(config.template),
     filename: fmt(config.html),
     styles: config.styles,
     scripts: config.scripts,
-  });
+  };
+  return new HtmlPlugin(options);
 }

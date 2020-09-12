@@ -1,2 +1,7 @@
-export {dayjs as default} from 'dayjs'
-export {Vue as default} from 'vue'
+import Vue from "vue";
+import dayjs from "dayjs";
+
+export default {
+  Vue,
+  dayjs
+};
