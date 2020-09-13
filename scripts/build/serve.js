@@ -2,29 +2,23 @@ const express = require("express");
 const webpack = require("webpack");
 const {merge} = require("webpack-merge");
 const portfinder = require("portfinder");
-const MultiEntryPlugin = require("webpack/lib/MultiEntryPlugin");
 const webpackDevMiddleware = require("webpack-dev-middleware");
 const webpackHotMiddleware = require("webpack-hot-middleware");
+const LazyCompiler = require("./lazy-compiler");
 const ejs = require("ejs");
 
 const alias = require("../alias");
 const {handlePackages} = require("./entries");
 const base = require("../webpack.base.js");
 const utils = require("../utils");
+const lazyCompiler = new LazyCompiler();
 
 portfinder.basePort = 3000;
 
-const now = Date.now();
-const entryFlagMap = {
-  [now]: true,
-};
-const setUpEntry = {
-  [now]: utils.root("scripts/build/useless.js"),
-};
-
-// 启动webpack
-const compiler = webpack(merge(base, {
-  entry: setUpEntry,
+const devWebpackConfig = {
+  entry: {
+    [Date.now()]: utils.root("scripts/build/useless.js")
+  },
   output: {
     path: utils.root("output"),
     chunkFilename: "chunks/[id].js"
@@ -32,10 +26,14 @@ const compiler = webpack(merge(base, {
   plugins: [
     new webpack.HotModuleReplacementPlugin()
   ]
-}));
+};
+// 启动webpack
+const compiler = webpack(merge(base, devWebpackConfig));
+
+// region 中间件
 // 开发服务器中间件
 const devMiddleware = webpackDevMiddleware(compiler, {
-  publicPath: "/dist",
+  publicPath: "",
   noInfo: false,
   quiet: true,
   logLevel: "warn",
@@ -53,10 +51,47 @@ const hotMiddleware = webpackHotMiddleware(compiler, {
   quiet: true,
 });
 
+const lazyMiddleware = lazyCompiler.middleware(compiler, devMiddleware, {
+  coverIndex: true, // 将入口展示到首页
+});
+// endregion
+
+// 启动服务器
+const app = express();
+app.use(devMiddleware);
+app.use(hotMiddleware);
+app.use(lazyMiddleware);
+
+app.set("views", utils.root("output/view"));
+app.set("view engine", "ejs");
+app.use(express.static(utils.root("output")));
+app.engine("html", ejs.renderFile);
+
+module.exports = async function (packages) {
+  const configs = await handlePackages(packages);
+  if (!configs.success) return;
+  const port = await portfinder.getPortPromise();
+  const entries = compose(configs.data);
+
+  // 将入口存入懒编译器
+  entries.forEach(entry => lazyCompiler.addEntryItem(entry));
+  // 暂时处理分包导致的路径不正确的问题，待修复
+  const redirectMiddleware = chunkRedirectMiddleware(configs.data.map(it => it.module));
+  app.use(redirectMiddleware);
+
+  app.listen(port, function () {
+    console.log(`server listen on http://localhost:${port}`);
+  });
+
+  // 主页入口
+  app.get("/", lazyCompiler.indexMiddleware);
+
+};
+
+
 // todo 调整publicPath，最终去掉该中间件
 // 将module-2/0.js转为/0.js的中间件
 function chunkRedirectMiddleware(list) {
-  console.log(list);
   const regs = list.map(key => new RegExp(`/${key}(.*)`));
   return function (req, res, next) {
     let path = req.originalUrl.split("?")[0];
@@ -77,86 +112,6 @@ function chunkRedirectMiddleware(list) {
   };
 }
 
-// 首页返回可访问的页面汇总
-function serverIndexPage(list) {
-  return function (req, res) {
-    // 应用单入口插件
-    res.send(
-      list
-        .map(
-          ({name}) =>
-            `<a href="/${name.replace(/\/index/, "")}">${name.replace(
-              /\/index/,
-              ""
-            )}</a>`
-        )
-        .join("<br>")
-    );
-  };
-}
-
-// 启动服务器
-const app = express();
-app.use(devMiddleware);
-app.use(hotMiddleware);
-
-app.set("views", utils.root("output/view"));
-app.set("view engine", "ejs");
-app.use(express.static(utils.root("output")));
-app.engine("html", ejs.renderFile);
-
-// 添加路由并将对应的入口加入webpack编译
-function handleEntry({name, entryJs, template, options}) {
-  app.get(`/${name}`, function (req, res) {
-    if (!entryFlagMap[name]) {
-      const entry = [
-        `webpack-hot-middleware/client?noInfo=true&reload=true&name=${name}`,
-        entryJs,
-      ];
-      console.log("新增编译入口: ", name);
-      const context = utils.root(".");
-      new MultiEntryPlugin(context, entry, name).apply(compiler);
-      // 强制重新构建一次，不用调用多次，后续的触发由 webpack 自己 hot reload
-      devMiddleware.invalidate();
-      entryFlagMap[name] = true;
-    }
-
-    res.render(template, {
-      htmlWebpackPlugin: {options}
-    });
-
-//     res.send(
-//       template.replace(
-//         "</body>",
-//         `<script src="/dist/${name}.js"></script>
-// </body>`
-//       )
-//     );
-  });
-}
-
-module.exports = async function (packages) {
-  const configs = await handlePackages(packages);
-  if (!configs.success) return;
-  const entries = compose(configs.data);
-  // console.log(JSON.stringify(entries, null, 4));
-
-  app.use(chunkRedirectMiddleware(configs.data.map(it => it.module)));
-
-  const port = await portfinder.getPortPromise();
-
-  entries.forEach(handleEntry);
-
-  app.listen(port, function () {
-    console.log(`server listen on http://localhost:${port}`);
-  });
-
-  // 主页入口
-  app.get("/", serverIndexPage(entries));
-
-};
-
-
 // 将packages格式化为一维的入口数组
 function compose(configs) {
   return configs.reduce((list, {module, entries}) => {
@@ -172,7 +127,7 @@ function compose(configs) {
         }),
         options: {
           styles: detail.styles,
-          scripts: [...detail.scripts, {body: true, link: `/dist/${module}/${page}.js`}],
+          scripts: [...detail.scripts, {body: true, link: `/${module}/${page}.js`}],
         }
       };
     });
