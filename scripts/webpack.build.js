@@ -6,7 +6,7 @@ const HtmlPlugin = require("html-webpack-plugin");
 module.exports = merge(base, {
   mode: "production",
   entry: {
-    detail: utils.packages("module-2/pages/detail/index.js"),
+    detail: utils.packages("module-2/pages/detail/build.js"),
   },
   output: {
     path: utils.root("output/dist/module-2"),

@@ -6,9 +6,7 @@ module.exports = {
   mode: process.env.NODE_ENV,
   context: utils.root("."),
   entry: {},
-  output: {
-    path: utils.root("dist"),
-  },
+  output: {},
   devtool: "source-map",
   resolve: {
     alias: {},
@@ -49,8 +47,10 @@ module.exports = {
   },
   externals: PRODUCTION
     ? {
-        vue: "SITE_DLL.Vue",
-      }
+      vue: "SITE_DLL.Vue",
+    }
     : {},
-  plugins: [new VueLoader()],
+  plugins: [
+    new VueLoader()
+  ],
 };

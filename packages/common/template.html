@@ -5,15 +5,25 @@
   <title><%= htmlWebpackPlugin.options.title %></title>
 
   <% for (var i = 0; i < htmlWebpackPlugin.options.scripts.length; i++) { %>
+  <% var script = htmlWebpackPlugin.options.scripts[i] %>
+  <% if(typeof script === 'string' || script.head) { %>
   <script type="text/javascript" src="<%= htmlWebpackPlugin.options.scripts[i] %>"></script>
+  <% } %>
   <% } %>
 
   <% for (var i = 0; i < htmlWebpackPlugin.options.styles.length; i++) { %>
-  <link rel="stylesheet" href="<%= htmlWebpackPlugin.options.styles[i] %>">
+  <link rel="stylesheet" href="<%= script %>">
   <% } %>
 
 </head>
 <body>
 <div id="app"></div>
+
+<% for (var i = 0; i < htmlWebpackPlugin.options.scripts.length; i++) { %>
+<% var script = htmlWebpackPlugin.options.scripts[i] %>
+<% if(script.body && script.link) { %>
+<script type="text/javascript" src="<%= script.link %>"></script>
+<% } %>
+<% } %>
 </body>
 </html>

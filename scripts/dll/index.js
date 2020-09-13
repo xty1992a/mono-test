@@ -12,7 +12,7 @@ function runWebpack() {
   return new Promise(resolve => {
     const config = merge(base, {
       entry: {
-        SITE_DLL: utils.packages("dll/index.js")
+        SITE_DLL: utils.packages("dll/build.js")
       },
       output: {
         path: alias.alias["@output"]("dll"),

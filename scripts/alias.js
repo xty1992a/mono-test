@@ -30,7 +30,7 @@ module.exports = {
     const dllManifest = require("./dll/manifest.json");
 
     return {
-      output: "@output/[name]/index.js", // js输出路径
+      output: "@output/[name]/build.js", // js输出路径
       html: "@view/[module]/[name].html", // html输出路径
       template: "@packages/common/template.html", // html模版
       styles: [

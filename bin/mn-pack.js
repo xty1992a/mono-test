@@ -14,7 +14,8 @@ if (program.build) {
 }
 // 以下模块可能依赖上面的设置，故而放下来
 const entries = require("../scripts/build/entries");
-const build = require("../scripts/build/index");
+const build = require("../scripts/build/build");
+const serve = require("../scripts/build/serve");
 const utils = require("../scripts/utils");
 
 run();
@@ -22,9 +23,18 @@ run();
 async function run() {
   const packages = await entries.findPackages(utils.packages("."));
   if (!packages.success) return;
+
+  if (program.dev) {
+    await serve(packages.data);
+    return;
+  }
+
   const result = await askPackage(packages.data);
   if (!result.success) return;
-  build(result.data);
+  if (program.build) {
+    await build(result.data);
+    process.exit(0);
+  }
 }
 
 async function askPackage(packages) {
@@ -39,8 +49,8 @@ async function askPackage(packages) {
       },
     ]);
     console.log(answers);
-    return { success: true, data: answers.packages };
+    return {success: true, data: answers.packages};
   } catch (e) {
-    return { success: false, error: e };
+    return {success: false, error: e};
   }
 }
