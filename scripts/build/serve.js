@@ -4,6 +4,7 @@ const { merge } = require("webpack-merge");
 const portfinder = require("portfinder");
 const webpackDevMiddleware = require("webpack-dev-middleware");
 const webpackHotMiddleware = require("webpack-hot-middleware");
+const { createProxyMiddleware } = require("http-proxy-middleware");
 const LazyCompiler = require("./lazy-compiler");
 const ejs = require("ejs");
 
@@ -13,7 +14,9 @@ const base = require("../webpack.base.js");
 const utils = require("../utils");
 const lazyCompiler = new LazyCompiler();
 
-portfinder.basePort = 3000;
+const proxy = require("../proxy");
+
+portfinder.basePort = 8080;
 
 module.exports = async function (packages) {
   // 分析package,获取入口信息
@@ -25,15 +28,18 @@ module.exports = async function (packages) {
   const app = setupServe();
   const compiler = setupWebpack(configs.data);
   const middleware = setupMiddleware(compiler);
+  useProxyMiddleware(app, proxy);
 
   middleware.forEach((m) => app.use(m));
 
   // 将入口存入懒编译器
   entries.forEach((entry) => lazyCompiler.addEntryItem(entry));
 
+  // todo 修复分包问题
   // 暂时处理分包导致的路径不正确的问题，待修复
   const redirectMiddleware = chunkRedirectMiddleware(
-    configs.data.map((it) => it.module)
+    configs.data.map((it) => it.module),
+    middleware[0]
   );
   app.use(redirectMiddleware);
 
@@ -107,9 +113,16 @@ function setupWebpack(packages) {
   return webpack(merge(base, devWebpackConfig));
 }
 
+function useProxyMiddleware(app, proxy) {
+  Object.keys(proxy).forEach((key) => {
+    const config = proxy[key];
+    app.use(key, createProxyMiddleware(config));
+  });
+}
+
 // todo 调整publicPath，最终去掉该中间件
 // 将module-2/0.js转为/0.js的中间件
-function chunkRedirectMiddleware(list) {
+function chunkRedirectMiddleware(list, devMiddleware) {
   const regs = list.map((key) => new RegExp(`/${key}(.*)`));
   return function (req, res, next) {
     let path = req.originalUrl.split("?")[0];

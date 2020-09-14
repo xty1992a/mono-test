@@ -1,28 +1,27 @@
-const MultiEntryPlugin = require("webpack/lib/MultiEntryPlugin");
-const utils = require("../utils");
-
-
 /*
 预先将入口存入懒编译器
 当访问某个入口时，将入口加入webpack编译流程。
-然后返回入口所带模版
+然后返回入口指定模版
 * */
+
+const MultiEntryPlugin = require("webpack/lib/MultiEntryPlugin");
+const utils = require("../utils");
 
 class LazyCompiler {
   constructor() {
-    this.entryMap = {};// 入口字典
+    this.entryMap = {}; // 入口字典
     this.entryRegList = [];
     this.indexMiddleware = this.indexMiddleware.bind(this);
   }
 
   // 添加一个待编译的入口配置
   addEntryItem(item) {
-    const {name} = item;
+    const { name } = item;
     this.entryMap[name] = {
       config: item,
-      hadCompile: false
+      hadCompile: false,
     };
-    this.entryRegList.push({test: new RegExp(name), name});
+    this.entryRegList.push({ test: new RegExp(name), name });
   }
 
   middleware(compiler, devMiddleware, options = {}) {
@@ -40,22 +39,22 @@ class LazyCompiler {
       }
       if (!name) return next();
 
-      const {template, options} = this.addEntryToWebpack(name, compiler, devMiddleware);
+      const { template, options } = this.addEntryToWebpack(
+        name,
+        compiler,
+        devMiddleware
+      );
 
       res.render(template, {
-        htmlWebpackPlugin: {options}
+        htmlWebpackPlugin: { options },
       });
-
     };
   }
 
   indexMiddleware(req, res, next) {
     res.send(
       this.entryRegList
-        .map(
-          ({name}) =>
-            `<a href="/${name}">${name}</a>`
-        )
+        .map(({ name }) => `<a href="/${name}">${name}</a>`)
         .join("<br>")
     );
   }

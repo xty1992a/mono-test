@@ -18,7 +18,7 @@ function handlePackages(modules) {
       const config = await createConfig(module);
       data.push(config);
     }
-    resolve({success: true, data});
+    resolve({ success: true, data });
   });
 }
 
@@ -28,7 +28,7 @@ async function createConfig(module) {
   let config = null;
   if (existConfig.success) {
     const local = await createLocalConfig(localCfg);
-    config = fmtConfig({module, ...local});
+    config = fmtConfig({ module, ...local });
   } else {
     config = createDftConfig(module);
   }
@@ -46,9 +46,9 @@ function createDftConfig(module) {
       return resolve(null);
     }
     const entries = pages.data.reduce((map, page) => {
-      return {...map, [page]: utils.copy(dftEntry)};
+      return { ...map, [page]: utils.copy(dftEntry) };
     }, {});
-    resolve({module, entries});
+    resolve({ module, entries });
   });
 }
 
@@ -77,7 +77,7 @@ function fmtConfig(config) {
       },
     };
   }, {});
-  return {...config, entries};
+  return { ...config, entries };
 }
 
 // endregion
@@ -87,12 +87,12 @@ function fmtConfig(config) {
 function findPackages(directory) {
   return new Promise(async (resolve) => {
     const dirs = await utils.readdir(directory);
-    if (!dirs.success) return resolve({success: false, data: []});
+    if (!dirs.success) return resolve({ success: false, data: [] });
     try {
       const data = [];
 
       while (dirs.data.length) {
-        const dir = dirs.data.pop();
+        const dir = dirs.data.shift();
         const pkgDir = path.join(directory, dir, "package.json");
         const access = await utils.access(pkgDir);
         if (!access.success) continue;
@@ -100,9 +100,9 @@ function findPackages(directory) {
         if (!pkg["isBusinessModule"]) continue;
         data.push(dir);
       }
-      resolve({success: true, data});
+      resolve({ success: true, data });
     } catch (error) {
-      resolve({success: false, error});
+      resolve({ success: false, error });
     }
   });
 }

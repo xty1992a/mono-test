@@ -1,6 +1,9 @@
 <template>
   <div class="home">
-    <p>detail page <Icon name="arrow-right" /></p>
+    <p>
+      detail page
+      <Icon name="arrow-right" />
+    </p>
 
     <img :src="cat" alt="" />
     <img src="/images/cat.jpg" alt="" />
@@ -9,6 +12,7 @@
 
 <script>
 import cat from "module-1/assets/cat.jpg";
+import axios from "axios";
 
 export default {
   name: "home",
@@ -22,7 +26,12 @@ export default {
   computed: {},
   methods: {},
   watch: {},
-  created() {},
+  async created() {
+    try {
+      const res = await axios.get("/users");
+      console.log(res);
+    } catch (e) {}
+  },
   mounted() {},
   beforeDestroy() {},
 };
@@ -33,6 +42,7 @@ export default {
   p {
     color: @red-color;
   }
+
   img {
     width: 100px;
   }
