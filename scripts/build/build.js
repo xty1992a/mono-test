@@ -8,6 +8,7 @@ const production = process.env.NODE_ENV === "production";
 const { CleanWebpackPlugin } = require("clean-webpack-plugin");
 const { BundleAnalyzerPlugin } = require("webpack-bundle-analyzer");
 const CopyPlugin = require("copy-webpack-plugin");
+const fse = require("fs-extra");
 /*
 输入模块名数组，依次使用webpack打包模块
 模块入口由模块下的mono.config.js指定
@@ -27,6 +28,8 @@ module.exports = async function (packages, { report }) {
       report,
     });
   });
+
+  await removePublicFile();
 
   // 模块依次串行打包，后续可考虑改为同时打包若干个模块
   while (taskConfigs.length) {
@@ -144,3 +147,19 @@ function runWebpack(config) {
 }
 
 // endregion
+
+// copy-webpack-plugin不会清理遗留资源,这里将其删除
+async function removePublicFile() {
+  const dirs = await utils.readdir(utils.root("output"));
+  if (!dirs.success) return;
+  dirs.data
+    .filter((it) => !["dist", "view"].includes(it))
+    .forEach((dir) => {
+      console.log(dir);
+      try {
+        fse.remove(utils.root(`output/${dir}`));
+      } catch (e) {
+        console.log(`删除${dir}失败`);
+      }
+    });
+}

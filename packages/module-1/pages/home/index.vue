@@ -5,6 +5,7 @@
 </template>
 
 <script>
+const sleep = (time) => new Promise((resolve) => setTimeout(resolve, time));
 export default {
   name: "home",
   components: {},
@@ -15,7 +16,10 @@ export default {
   computed: {},
   methods: {},
   watch: {},
-  created() {},
+  async created() {
+    await sleep(1000);
+    console.log("sleep 1s");
+  },
   mounted() {},
   beforeDestroy() {},
 };

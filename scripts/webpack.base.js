@@ -2,6 +2,21 @@ const utils = require("./utils");
 const VueLoader = require("vue-loader/lib/plugin-webpack4");
 const PRODUCTION = process.env.NODE_ENV === "production";
 const dll = require("./dll");
+const MiniCssExtractPlugin = require("mini-css-extract-plugin");
+
+const plugins = [new VueLoader()];
+
+if (PRODUCTION) {
+  console.log("add css extract plugin");
+  plugins.push(
+    new MiniCssExtractPlugin({
+      filename: "[name]_[contenthash:8].css",
+      chunkFilename: "chunks/[name]_[contenthash:8].css",
+    })
+  );
+}
+
+const styleLoader = PRODUCTION ? MiniCssExtractPlugin.loader : "style-loader";
 
 module.exports = {
   mode: process.env.NODE_ENV,
@@ -26,6 +41,32 @@ module.exports = {
       {
         test: /\.vue$/,
         loader: "vue-loader",
+        options: {
+          loaders: {
+            css: [styleLoader, "css-loader"],
+            less: [
+              styleLoader,
+              "css-loader",
+              "postcss-loader",
+              "less-loader",
+              useGlobalVariable(),
+            ],
+          },
+        },
+      },
+      {
+        test: /\.css$/,
+        use: [styleLoader, "css-loader", "postcss-loader"],
+      },
+      {
+        test: /\.less$/,
+        use: [
+          styleLoader,
+          "css-loader",
+          "postcss-loader",
+          "less-loader",
+          useGlobalVariable(),
+        ],
       },
       {
         test: /\.(jpe?g|png|gif)$/,
@@ -49,27 +90,17 @@ module.exports = {
           symbolId: "icon-[name]",
         },
       },
-      {
-        test: /\.css$/,
-        use: ["style-loader", "css-loader", "postcss-loader"],
-      },
-      {
-        test: /\.less$/,
-        use: [
-          "style-loader",
-          "css-loader",
-          "postcss-loader",
-          "less-loader",
-          {
-            loader: "sass-resources-loader",
-            options: {
-              resources: utils.packages("common/styles/variable.less"),
-            },
-          },
-        ],
-      },
     ],
   },
   externals: PRODUCTION ? dll.getExternals() : {},
-  plugins: [new VueLoader()],
+  plugins,
 };
+
+function useGlobalVariable() {
+  return {
+    loader: "sass-resources-loader",
+    options: {
+      resources: utils.packages("common/styles/variable.less"),
+    },
+  };
+}
