@@ -13,8 +13,10 @@
 const { merge } = require("webpack-merge");
 const webpack = require("webpack");
 const dayjs = require("dayjs");
+process.env.NODE_ENV = "production";
+process.env.BUILD_TYPE = "dll";
+
 const utils = require("../utils");
-const alias = require("../alias");
 const base = require("../webpack.base");
 
 const today = dayjs().format("YYYY_MM_DD");
@@ -28,7 +30,7 @@ function runWebpack() {
         [GLOBAL_LIBRARY_NAME]: utils.packages("dll/index.js"),
       },
       output: {
-        path: alias.alias["@output"]("dll"),
+        path: require("../alias").alias["@output"]("dll"),
         filename: `[name]_${today}.js`,
         libraryTarget: "var", // 打包后直接声明为全局变量
         library: GLOBAL_LIBRARY_NAME, // 变量名为此
@@ -51,9 +53,19 @@ function runWebpack() {
 
 // 生成清单
 function makeDllManifest(stats) {
+  let output = stats.assetsByChunkName[GLOBAL_LIBRARY_NAME];
+  if (typeof output === "string") {
+    output = [output];
+  }
+
+  const js = output.filter((it) => /\.js$/.test(it));
+  const css = output.filter((it) => /\.css$/.test(it));
+
+  console.log(output, js, css);
+
   const manifest = {
-    scripts: [`/dist/dll/${stats.assetsByChunkName[GLOBAL_LIBRARY_NAME]}`],
-    styles: [],
+    scripts: js.map((k) => `/dist/dll/${k}`),
+    styles: css.map((k) => `/dist/dll/${k}`),
     namespace: GLOBAL_LIBRARY_NAME,
   };
   utils.writeFile(

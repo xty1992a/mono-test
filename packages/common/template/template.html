@@ -13,7 +13,7 @@
     ></script>
     <% } %> <% } %> <% for (var i = 0; i <
     htmlWebpackPlugin.options.styles.length; i++) { %>
-    <link rel="stylesheet" href="<%= script %>" />
+    <link rel="stylesheet" href="<%= htmlWebpackPlugin.options.styles[i] %>" />
     <% } %>
   </head>
   <body>

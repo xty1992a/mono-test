@@ -1,7 +1,7 @@
 const utils = require("./utils");
 const VueLoader = require("vue-loader/lib/plugin-webpack4");
 const PRODUCTION = process.env.NODE_ENV === "production";
-const dll = require("./dll");
+const IS_DLL = process.env.BUILD_TYPE === "dll";
 const MiniCssExtractPlugin = require("mini-css-extract-plugin");
 
 const plugins = [new VueLoader()];
@@ -91,7 +91,7 @@ module.exports = {
       },
     ],
   },
-  externals: PRODUCTION ? dll.getExternals() : {},
+  externals: PRODUCTION && !IS_DLL ? require("./dll").getExternals() : {},
   plugins,
 };
 

@@ -4,6 +4,7 @@
       detail page
       <Icon name="arrow-right" />
     </p>
+    <van-cell title="标题"></van-cell>
 
     <img :src="cat" alt="" />
     <img src="/images/cat.jpg" alt="" />
