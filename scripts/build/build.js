@@ -34,9 +34,11 @@ module.exports = async function (packages, { report }) {
   // 模块依次串行打包，后续可考虑改为同时打包若干个模块
   while (taskConfigs.length) {
     const { config, module } = taskConfigs.shift();
+    const message = `${module} 编译成功`;
+    console.time(message);
     const result = await runWebpack(config);
     if (result.success) {
-      console.log(module, "编译成功");
+      console.timeEnd(message);
     } else {
       console.error(module, "编译失败");
     }
@@ -155,7 +157,6 @@ async function removePublicFile() {
   dirs.data
     .filter((it) => !["dist", "view"].includes(it))
     .forEach((dir) => {
-      console.log(dir);
       try {
         fse.remove(utils.root(`output/${dir}`));
       } catch (e) {

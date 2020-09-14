@@ -7,7 +7,6 @@ const MiniCssExtractPlugin = require("mini-css-extract-plugin");
 const plugins = [new VueLoader()];
 
 if (PRODUCTION) {
-  console.log("add css extract plugin");
   plugins.push(
     new MiniCssExtractPlugin({
       filename: "[name]_[contenthash:8].css",

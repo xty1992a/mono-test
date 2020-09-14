@@ -108,7 +108,19 @@ function findPackages(directory) {
 }
 
 // endregion
+
+// 搜寻指定路径下的pages子目录
+async function findPages(directory) {
+  try {
+    const pages = await utils.readdir(utils.packages(`${directory}/pages`));
+    if (!pages.success) return pages;
+    return pages;
+  } catch (error) {
+    return { success: fasle, error };
+  }
+}
 module.exports = {
   handlePackages,
   findPackages,
+  findPages,
 };

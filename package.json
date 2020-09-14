@@ -5,8 +5,9 @@
     "mn": "bin/mn.js"
   },
   "scripts": {
-    "build": "node ./bin/mn.js pack --build",
     "dll": "node ./bin/mn.js dll",
+    "create": "node ./bin/mn.js create",
+    "build": "node ./bin/mn.js pack --build",
     "dev": "node ./bin/mn.js pack --dev"
   },
   "husky": {

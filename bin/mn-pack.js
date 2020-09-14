@@ -41,8 +41,7 @@ async function run() {
 
 async function askPackage(packages) {
   try {
-    const answers = {};
-    const result = await inquirer.prompt([
+    const answers = await inquirer.prompt([
       {
         name: "packages",
         message: "请选择需要编译的包",
@@ -50,28 +49,24 @@ async function askPackage(packages) {
         choices: ["all(全部)", ...packages],
         default: [],
       },
+      {
+        name: "report",
+        message: "是否需要依赖分析报告?",
+        type: "confirm",
+        default: false,
+        when({ packages }) {
+          return !packages.includes("all(全部)") && packages.length === 1;
+        },
+      },
     ]);
 
-    if (result.packages.includes("all(全部)")) {
-      result.packages = packages;
-    }
-
-    answers.packages = result.packages;
-
-    if (answers.packages.length === 1) {
-      const { report } = await inquirer.prompt([
-        {
-          name: "report",
-          message: "是否需要依赖分析报告?",
-          type: "confirm",
-          default: false,
-        },
-      ]);
-      answers.report = report;
+    if (answers.packages.includes("all(全部)")) {
+      answers.packages = packages;
     }
 
     return { success: true, data: answers };
   } catch (e) {
+    console.log(e);
     return { success: false, error: e };
   }
 }
