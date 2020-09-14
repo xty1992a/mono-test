@@ -25,9 +25,11 @@
     "babel-loader": "^8.1.0",
     "clean-webpack-plugin": "^3.0.0",
     "commander": "^6.1.0",
+    "copy-webpack-plugin": "^6.1.0",
     "css-loader": "^4.3.0",
     "ejs": "^3.1.5",
     "express": "^4.17.1",
+    "file-loader": "^6.1.0",
     "glob": "^7.1.6",
     "html-webpack-plugin": "^4.4.1",
     "husky": "^4.3.0",
@@ -53,8 +55,12 @@
     "webpack-merge": "^5.1.4"
   },
   "dependencies": {
+    "@babel/plugin-proposal-nullish-coalescing-operator": "^7.10.4",
+    "@babel/plugin-proposal-optional-chaining": "^7.11.0",
     "core-js": "^3.6.5",
     "dayjs": "^1.8.35",
+    "sass-resources-loader": "^2.1.0",
+    "svg-sprite-loader": "^5.0.0",
     "vue": "^2.6.12"
   },
   "browserslist": [

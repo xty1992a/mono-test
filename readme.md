@@ -13,7 +13,6 @@
    启动命令后,选择要编译的`package`,cli 会依次使用 webpack 打包每个`package`.
 
 2. dev `npm run dev`  
-   **执行本命令之前,请先执行 dll 命令**  
    实际调用了`node ./bin/mn.js pack --dev`,即 cli 的 pack 命令下的 dev 模式.  
    命令将启动一个`express`服务器,并将所有`package`的入口加入路由.
    当访问某个路径时,将该路径对应的入口加入 webpack 编译流程.

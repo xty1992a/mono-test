@@ -1,3 +1,7 @@
+/*
+ * 本文件提供了一些路径别名与路径处理方法
+ * */
+
 const path = require("path");
 const utils = require("./utils");
 const dll = require("./dll");

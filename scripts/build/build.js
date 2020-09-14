@@ -6,7 +6,7 @@ const path = require("path");
 const { handlePackages } = require("./entries");
 const production = process.env.NODE_ENV === "production";
 const { CleanWebpackPlugin } = require("clean-webpack-plugin");
-
+const CopyPlugin = require("copy-webpack-plugin");
 /*
 输入模块名数组，依次使用webpack打包模块
 模块入口由模块下的mono.config.js指定
@@ -20,7 +20,9 @@ module.exports = async function (packages) {
   if (!configs.success) return { success: false };
 
   // 将配置转为webpack配置
-  const taskConfigs = configs.data.map(createWebpackConfig);
+  const taskConfigs = configs.data.map((c, i) => {
+    return createWebpackConfig(c, i === configs.data.length - 1);
+  });
 
   // 模块依次串行打包，后续可考虑改为同时打包若干个模块
   while (taskConfigs.length) {
@@ -39,11 +41,29 @@ module.exports = async function (packages) {
 
 // region webpack相关
 // 生成webpack配置
-function createWebpackConfig({ module, entries }) {
+function createWebpackConfig({ module, entries }, isLast = false) {
   const moduleDir = utils.packages(module);
   const entry = {};
 
-  const plugins = [];
+  const plugins = [new CleanWebpackPlugin()];
+
+  // 全局资源搬运一次即可,无需每次搬运
+  if (isLast) {
+    // todo 搬运前清理
+    // build以package为context,无法清理外部的资源
+    plugins.push(
+      new CopyPlugin({
+        patterns: [
+          // context 仅仅是指form的context,因此to还是得从当次打包的output.path计算其,见上面
+          {
+            from: "packages/common/public",
+            to: "../../../output",
+            context: utils.root("."),
+          },
+        ],
+      })
+    );
+  }
 
   Object.keys(entries).forEach((page) => {
     entry[page] = [path.join(moduleDir, `pages/${page}/index.js`)];
@@ -65,7 +85,12 @@ function createWebpackConfig({ module, entries }) {
       chunkFilename: "chunks/[name]_[contenthash:8].js",
       publicPath: `/dist/${module}/`,
     },
-    plugins: [...plugins, new CleanWebpackPlugin()],
+    resolve: {
+      alias: {
+        [module]: utils.packages(module),
+      },
+    },
+    plugins: [...plugins],
   });
 
   return { config, module: module };

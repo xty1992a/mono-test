@@ -1,6 +1,13 @@
 /*
  * 该脚本用于打包dll依赖
- * 公共依赖将挂载在全局变量[]
+ * 公共依赖将挂载在全局变量[GLOBAL_LIBRARY_NAME]中.
+ * 再通过 webpack 的 externals 排除依赖
+ * */
+
+/*
+ * todo 优化dll命令
+ * 执行命令后应更新webpack.base.js
+ * 或提供一个方法给webpack.base.js,供其查询最新的 externals
  * */
 
 const { merge } = require("webpack-merge");
@@ -56,6 +63,7 @@ function makeDllManifest(stats) {
   );
 }
 // 获取清单
+// build时,将dll加入模板中
 function getDllManifest() {
   return require("./manifest.json");
 }
