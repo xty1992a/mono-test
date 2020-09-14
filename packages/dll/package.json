@@ -7,9 +7,13 @@
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "isBusinessModule": false,
+  "exportLibrary": {
+    "axios": "axios",
+    "dayjs": "dayjs",
+    "vue": "Vue"
+  },
   "keywords": [],
   "author": "",
   "license": "ISC",
-  "dependencies": {
-  }
+  "dependencies": {}
 }

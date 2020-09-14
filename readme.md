@@ -21,7 +21,7 @@
 
 > dll 的作用
 > 该命令类似`webpack`的`DllPlugin`插件,它将打包`packages`下的`dll`
-> 并生成清单,后续的打包会检查该清单,将清单中的
+> 并生成清单,后续的打包会检查该清单,将清单中的依赖作为`externals`排除.
 
 > cli 如何搜寻 packages?  
 > 搜寻 packages 下的目录,过滤出其中包含`package.json`,且`package.json`中`isBusinessModule`字段为`true`的目录,将其视为一个`package`

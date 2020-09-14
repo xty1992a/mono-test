@@ -8,9 +8,9 @@ const { createProxyMiddleware } = require("http-proxy-middleware");
 const LazyCompiler = require("./lazy-compiler");
 const ejs = require("ejs");
 
+const base = require("../webpack.base.js");
 const alias = require("../alias");
 const { handlePackages } = require("./entries");
-const base = require("../webpack.base.js");
 const utils = require("../utils");
 const lazyCompiler = new LazyCompiler();
 

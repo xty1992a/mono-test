@@ -68,8 +68,26 @@ function getDllManifest() {
   return require("./manifest.json");
 }
 
+// build时,检查哪些依赖无需打包,可以排除
+function getExternals() {
+  try {
+    const pkg = require(utils.packages("dll/package.json"));
+    const { exportLibrary } = pkg;
+    return Object.keys(exportLibrary).reduce((map, key) => {
+      return {
+        ...map,
+        [key]: `${GLOBAL_LIBRARY_NAME}.${exportLibrary[key]}`,
+      };
+    }, {});
+  } catch (e) {
+    console.log("未找到");
+    return {};
+  }
+}
+
 module.exports = {
   getDllManifest,
-  runWebpack,
   makeDllManifest,
+  runWebpack,
+  getExternals,
 };

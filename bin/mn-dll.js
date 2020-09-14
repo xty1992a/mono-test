@@ -2,8 +2,7 @@
 const program = require("commander");
 const dll = require("../scripts/dll");
 
-program
-  .parse(process.argv);
+program.parse(process.argv);
 
 run();
 
@@ -12,5 +11,3 @@ async function run() {
   if (!result.success) return;
   dll.makeDllManifest(result.data);
 }
-
-

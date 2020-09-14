@@ -1,11 +1,12 @@
-const base = require("../webpack.base");
 const { merge } = require("webpack-merge");
+const base = require("../webpack.base");
 const alias = require("../alias");
 const utils = require("../utils");
 const path = require("path");
 const { handlePackages } = require("./entries");
 const production = process.env.NODE_ENV === "production";
 const { CleanWebpackPlugin } = require("clean-webpack-plugin");
+const { BundleAnalyzerPlugin } = require("webpack-bundle-analyzer");
 const CopyPlugin = require("copy-webpack-plugin");
 /*
 输入模块名数组，依次使用webpack打包模块
@@ -13,7 +14,7 @@ const CopyPlugin = require("copy-webpack-plugin");
 默认是模块下的pages下的各目录
 * */
 
-module.exports = async function (packages) {
+module.exports = async function (packages, { report }) {
   console.time("编译完成");
   // 生成模块入口等配置
   const configs = await handlePackages(packages);
@@ -21,7 +22,10 @@ module.exports = async function (packages) {
 
   // 将配置转为webpack配置
   const taskConfigs = configs.data.map((c, i) => {
-    return createWebpackConfig(c, i === configs.data.length - 1);
+    return createWebpackConfig(c, {
+      needCopy: i === configs.data.length - 1,
+      report,
+    });
   });
 
   // 模块依次串行打包，后续可考虑改为同时打包若干个模块
@@ -41,14 +45,21 @@ module.exports = async function (packages) {
 
 // region webpack相关
 // 生成webpack配置
-function createWebpackConfig({ module, entries }, isLast = false) {
+function createWebpackConfig(
+  { module, entries },
+  { needCopy = false, report = false }
+) {
   const moduleDir = utils.packages(module);
   const entry = {};
 
   const plugins = [new CleanWebpackPlugin()];
 
+  if (report) {
+    plugins.push(new BundleAnalyzerPlugin());
+  }
+
   // 全局资源搬运一次即可,无需每次搬运
-  if (isLast) {
+  if (needCopy) {
     // todo 搬运前清理
     // build以package为context,无法清理外部的资源
     plugins.push(

@@ -1,6 +1,7 @@
 const utils = require("./utils");
 const VueLoader = require("vue-loader/lib/plugin-webpack4");
 const PRODUCTION = process.env.NODE_ENV === "production";
+const dll = require("./dll");
 
 module.exports = {
   mode: process.env.NODE_ENV,
@@ -69,10 +70,6 @@ module.exports = {
       },
     ],
   },
-  externals: PRODUCTION
-    ? {
-        vue: "SITE_DLL.Vue",
-      }
-    : {},
+  externals: PRODUCTION ? dll.getExternals() : {},
   plugins: [new VueLoader()],
 };

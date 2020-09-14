@@ -1,14 +1,14 @@
 const path = require("path");
 const fs = require("fs");
-const {promisify} = require("util");
+const { promisify } = require("util");
 
 function resolvable(fn) {
   return async function () {
     try {
       const data = await promisify(fn).apply(this, arguments);
-      return {success: true, data};
+      return { success: true, data };
     } catch (error) {
-      return {success: false, error};
+      return { success: false, error };
     }
   };
 }
@@ -20,5 +20,5 @@ module.exports = {
   access: (file) => resolvable(fs.access)(file, fs.constants.F_OK),
   readdir: (directory) => resolvable(fs.readdir)(directory),
   copy: (o) => JSON.parse(JSON.stringify(o)),
-  writeFile: (...args) => resolvable(fs.writeFile)(...args)
+  writeFile: (...args) => resolvable(fs.writeFile)(...args),
 };

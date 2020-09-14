@@ -4,7 +4,6 @@
 
 const path = require("path");
 const utils = require("./utils");
-const dll = require("./dll");
 
 const alias = {
   "@output": (f) => path.join(utils.root("output/dist"), f),
@@ -32,7 +31,7 @@ function getDftEntry() {
   let scripts = [];
 
   try {
-    const dllManifest = dll.getDllManifest();
+    const dllManifest = require("./dll").getDllManifest();
     styles = [...(dllManifest.styles || [])];
     scripts = [...(dllManifest.scripts || [])];
   } catch (e) {
