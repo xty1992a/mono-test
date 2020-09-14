@@ -1,1 +1,5 @@
-{"scripts":["/dist/dll/SITE_DLL_2020_09_12.js"],"styles":[],"namespace":"SITE_DLL"}
+{
+  "scripts": ["/dist/dll/SITE_DLL_2020_09_14.js"],
+  "styles": [],
+  "namespace": "SITE_DLL"
+}

@@ -42,15 +42,15 @@ async function askPackage(packages) {
     const answers = await inquirer.prompt([
       {
         name: "packages",
-        message: "请选择需要编译的模块",
+        message: "请选择需要编译的包",
         type: "checkbox",
         choices: packages,
         default: [],
       },
     ]);
     console.log(answers);
-    return {success: true, data: answers.packages};
+    return { success: true, data: answers.packages };
   } catch (e) {
-    return {success: false, error: e};
+    return { success: false, error: e };
   }
 }

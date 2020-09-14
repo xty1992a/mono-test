@@ -1,11 +1,11 @@
 const base = require("../webpack.base");
-const {merge} = require("webpack-merge");
+const { merge } = require("webpack-merge");
 const alias = require("../alias");
 const utils = require("../utils");
 const path = require("path");
-const {handlePackages} = require("./entries");
+const { handlePackages } = require("./entries");
 const production = process.env.NODE_ENV === "production";
-const {CleanWebpackPlugin} = require("clean-webpack-plugin");
+const { CleanWebpackPlugin } = require("clean-webpack-plugin");
 
 /*
 输入模块名数组，依次使用webpack打包模块
@@ -17,14 +17,14 @@ module.exports = async function (packages) {
   console.time("编译完成");
   // 生成模块入口等配置
   const configs = await handlePackages(packages);
-  if (!configs.success) return {success: false};
+  if (!configs.success) return { success: false };
 
   // 将配置转为webpack配置
   const taskConfigs = configs.data.map(createWebpackConfig);
 
   // 模块依次串行打包，后续可考虑改为同时打包若干个模块
   while (taskConfigs.length) {
-    const {config, module} = taskConfigs.shift();
+    const { config, module } = taskConfigs.shift();
     const result = await runWebpack(config);
     if (result.success) {
       console.log(module, "编译成功");
@@ -34,12 +34,12 @@ module.exports = async function (packages) {
   }
   console.timeEnd("编译完成");
 
-  return {success: true};
+  return { success: true };
 };
 
 // region webpack相关
 // 生成webpack配置
-function createWebpackConfig({module, entries}) {
+function createWebpackConfig({ module, entries }) {
   const moduleDir = utils.packages(module);
   const entry = {};
 
@@ -68,14 +68,14 @@ function createWebpackConfig({module, entries}) {
     plugins: [...plugins, new CleanWebpackPlugin()],
   });
 
-  return {config, module: module};
+  return { config, module: module };
 }
 
 // 为每个入口生成html插件
 const HtmlPlugin = require("html-webpack-plugin");
 
-function createHtmlPlugin({config, module, name}) {
-  const fmt = (p) => alias.format({pathString: p, module, name});
+function createHtmlPlugin({ config, module, name }) {
+  const fmt = (p) => alias.format({ pathString: p, module, name });
 
   const options = {
     chunks: [name],
@@ -87,7 +87,6 @@ function createHtmlPlugin({config, module, name}) {
   };
   return new HtmlPlugin(options);
 }
-
 
 // 运行webpack任务
 const webpack = require("webpack");
@@ -101,9 +100,9 @@ function runWebpack(config) {
           error = stats.toJson().errors;
         }
         console.error(error);
-        return resolve({success: false, error});
+        return resolve({ success: false, error });
       }
-      resolve({success: true, data: stats});
+      resolve({ success: true, data: stats });
     });
   });
 }
