@@ -1,6 +1,7 @@
 <template>
   <div class="home">
     <p>list detail page</p>
+    <button @click="pick">选择人员</button>
   </div>
 </template>
 
@@ -14,21 +15,24 @@ export default {
     return {};
   },
   computed: {},
-  methods: {},
+  methods: {
+    async pick() {
+      import("../../common/action").then(async ({ default: action }) => {
+        const result = await action({
+          options: [
+            { name: "张三", value: "zs" },
+            { name: "李四", value: "ls" },
+          ],
+        });
+        console.log(result);
+      });
+    },
+  },
   watch: {},
   async created() {
     await sleep(500);
     console.log("sleep 1s");
-
-    import("../../common/action").then(async ({ default: action }) => {
-      const result = await action({
-        options: [
-          { name: "张三", value: "zs" },
-          { name: "李四", value: "ls" },
-        ],
-      });
-      console.log(result.data);
-    });
+    this.pick();
   },
 
   mounted() {},

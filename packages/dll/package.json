@@ -10,8 +10,7 @@
   "exportLibrary": {
     "axios": "axios",
     "dayjs": "dayjs",
-    "vue": "Vue",
-    "vant": "vant"
+    "vue": "Vue"
   },
   "keywords": [],
   "author": "",

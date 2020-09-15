@@ -3,6 +3,10 @@
     <div class="action" v-show="show">
       <div class="mask"></div>
       <div class="center">
+        <h3>
+          <span>异步组件</span>
+          <span class="close" @click="onCancel">&times;</span>
+        </h3>
         <ul class="list">
           <li
             class="item"
@@ -83,6 +87,30 @@ export default {
     background-color: #fff;
     z-index: 1;
     position: relative;
+    h3 {
+      margin: 0;
+      padding: 10px 15px;
+      font-weight: 500;
+      font-size: 17px;
+      border-bottom: 1px solid #e5e5e5;
+
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      .close {
+        cursor: pointer;
+        transform: scale(1.2);
+      }
+    }
+    ul {
+      list-style: none;
+      margin: 0;
+      padding: 10px;
+      li {
+        padding: 10px 20px;
+        cursor: pointer;
+      }
+    }
   }
 }
 

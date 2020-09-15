@@ -61,8 +61,6 @@ function makeDllManifest(stats) {
   const js = output.filter((it) => /\.js$/.test(it));
   const css = output.filter((it) => /\.css$/.test(it));
 
-  console.log(output, js, css);
-
   const manifest = {
     scripts: js.map((k) => `/dist/dll/${k}`),
     styles: css.map((k) => `/dist/dll/${k}`),
