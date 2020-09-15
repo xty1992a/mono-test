@@ -49,12 +49,12 @@ async function askServe(packages) {
       type: "list",
       choices: [
         {
-          name: "定向编译",
-          value: "devServer",
-        },
-        {
           name: "全量懒编译",
           value: "myServer",
+        },
+        {
+          name: "定向编译",
+          value: "devServer",
         },
       ],
     },

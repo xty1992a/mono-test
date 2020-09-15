@@ -39,10 +39,27 @@ function run(options) {
     ],
     proxy,
     logLevel: "warn",
+    before(app) {
+      app.use("/", indexMiddleware(entries));
+    },
   });
-  server.listen(port, function () {
-    console.log("server start ");
+
+  const hostname = "localhost";
+
+  server.listen(port, hostname, function () {
+    console.log(`"server start on http://${hostname}:${port}`);
   });
+}
+
+function indexMiddleware(entries) {
+  return function (req, res, next) {
+    if (!["/", ""].includes(req.originalUrl)) return next();
+    res.send(
+      entries
+        .map((it) => `<a href="/${it.name}.html">${it.name}</a>`)
+        .join("<br>")
+    );
+  };
 }
 
 function createEntry(entries) {
