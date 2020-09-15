@@ -1,6 +1,6 @@
 const { merge } = require("webpack-merge");
 const base = require("../webpack.base");
-const alias = require("../alias");
+const mono = require("../mono");
 const utils = require("../utils");
 const path = require("path");
 const { handlePackages } = require("./entries");
@@ -15,7 +15,7 @@ const fse = require("fs-extra");
 默认是模块下的pages下的各目录
 * */
 
-module.exports = async function (packages, { report }) {
+module.exports = async function ({ packages, report }) {
   console.time("编译完成");
   // 生成模块入口等配置
   const configs = await handlePackages(packages);
@@ -96,7 +96,7 @@ function createWebpackConfig(
     entry,
     output: {
       // 模块依次打包，每次的输出基础路径均不同
-      path: alias.alias["@output"](module),
+      path: mono.alias["@output"](module),
       filename: "[name]_[contenthash:8].js",
       chunkFilename: "chunks/[name]_[contenthash:8].js",
       publicPath: `/dist/${module}/`,
@@ -116,7 +116,7 @@ function createWebpackConfig(
 const HtmlPlugin = require("html-webpack-plugin");
 
 function createHtmlPlugin({ config, module, name }) {
-  const fmt = (p) => alias.format({ pathString: p, module, name });
+  const fmt = (p) => mono.format({ pathString: p, module, name });
 
   const options = {
     chunks: [name],

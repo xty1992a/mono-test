@@ -25,20 +25,53 @@ async function run() {
   if (!packages.success) return;
 
   if (program.dev) {
-    await serve(packages.data);
-    return;
+    const answers = await askServe(packages.data);
+    if (!answers) return;
+    if (!answers.packages) {
+      answers.packages = packages.data;
+    }
+    await serve(answers);
   }
 
-  const result = await askPackage(packages.data);
-  if (!result.success) return;
   if (program.build) {
-    const { packages, report } = result.data;
-    await build(packages, {
-      report,
-    });
+    const answers = await askPackage(packages.data);
+    if (!answers) return;
+    await build(answers);
   }
 }
 
+// 询问服务类型
+async function askServe(packages) {
+  return inquirer.prompt([
+    {
+      name: "serverType",
+      message: "请选择服务类型",
+      type: "list",
+      choices: [
+        {
+          name: "定向编译",
+          value: "devServer",
+        },
+        {
+          name: "全量懒编译",
+          value: "myServer",
+        },
+      ],
+    },
+    {
+      name: "packages",
+      message: "请选择需要编译的包",
+      type: "checkbox",
+      choices: packages,
+      default: [],
+      when({ serverType }) {
+        return serverType === "devServer";
+      },
+    },
+  ]);
+}
+
+// 询问需要编译哪些包
 async function askPackage(packages) {
   try {
     const answers = await inquirer.prompt([
@@ -64,9 +97,9 @@ async function askPackage(packages) {
       answers.packages = packages;
     }
 
-    return { success: true, data: answers };
+    return answers;
   } catch (e) {
     console.log(e);
-    return { success: false, error: e };
+    return null;
   }
 }

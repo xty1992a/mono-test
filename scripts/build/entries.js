@@ -8,9 +8,10 @@ const path = require("path");
 // region 为指定的packages生成配置
 // 每个package目录，如果包含mono.config.js，则用mono.config覆盖默认配置
 // 否则基于目录下的pages中的子目录作为
-const dftEntry = require("../alias").entry();
+const dftEntry = require("../mono").entry();
 
 function handlePackages(modules) {
+  modules = [...modules];
   return new Promise(async (resolve) => {
     const data = [];
     while (modules.length) {

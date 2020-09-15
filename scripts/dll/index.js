@@ -30,7 +30,7 @@ function runWebpack() {
         [GLOBAL_LIBRARY_NAME]: utils.packages("dll/index.js"),
       },
       output: {
-        path: require("../alias").alias["@output"]("dll"),
+        path: require("../mono").alias["@output"]("dll"),
         filename: `[name]_${today}.js`,
         libraryTarget: "var", // 打包后直接声明为全局变量
         library: GLOBAL_LIBRARY_NAME, // 变量名为此

@@ -1,21 +1,19 @@
-/*
- * 本文件提供了一些路径别名与路径处理方法
- * */
+const utils = require("../utils");
+const config = require("../mono.config");
 
-const path = require("path");
-const utils = require("./utils");
+// 将配置中设置的路径转为路径方法
+const alias = Object.keys(config.alias).reduce((map, key) => {
+  return {
+    ...map,
+    [key]: (path) => require("path").join(config.alias[key], path),
+  };
+}, {});
 
-const alias = {
-  "@output": (f) => path.join(utils.root("output/dist"), f),
-  "@view": (f) => path.join(utils.root("output/view"), f),
-  "@packages": (f) => path.join(utils.root("packages"), f),
-};
-
+// 将一个模板路径转为真实路径
+// @output/[module]/[name].js -> /output/module-1/detail.js
 function format({ pathString, module, name }) {
   pathString = pathString.replace("[module]", module).replace("[name]", name);
-
   const keys = Object.keys(alias);
-
   while (keys.length) {
     const key = keys.pop();
     const reg = new RegExp(`^${key}/(.*)`);
@@ -31,7 +29,7 @@ function getDftEntry() {
   let scripts = [];
 
   try {
-    const dllManifest = require("./dll").getDllManifest();
+    const dllManifest = require("../dll").getDllManifest();
     styles = [...(dllManifest.styles || [])];
     scripts = [...(dllManifest.scripts || [])];
   } catch (e) {
@@ -46,7 +44,6 @@ function getDftEntry() {
     scripts, // 加到head中的script标签资源路径
   };
 }
-
 module.exports = {
   alias,
   format,
