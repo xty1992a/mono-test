@@ -1,46 +1,53 @@
 <template>
   <div class="home">
     <p ref="p">
-      <span>height: {{ size.height }}</span>
-      <span>width: {{ size.width }}</span>
+      <span>
+        <span>height: {{ size.height }}</span>
+        <span>width: {{ size.width }}</span>
+      </span>
       <Icon name="arrow-right" />
     </p>
-    <van-cell title="标题" />
 
-    <img :src="cat" alt="" />
-    <img src="/images/cat.jpg" alt="" />
+    <van-row>
+      <van-col :span="12">
+        <img :src="cat" alt="" />
+      </van-col>
+      <van-col :span="12">
+        <img src="/images/cat.jpg" alt="" />
+      </van-col>
+    </van-row>
+
+    <van-cell-group class="list" ref="list">
+      <van-cell class="item" v-for="it in users" :key="it.id" :title="it.name">
+        <span>{{ it.age }}</span>
+      </van-cell>
+    </van-cell-group>
   </div>
 </template>
 
 <script>
 import cat from "module-1/assets/cat.jpg";
-import { defineComponent, onMounted, ref } from "@vue/composition-api";
+import { defineComponent, watch } from "@vue/composition-api";
+import { useState, useActions } from "vuex-composition-helpers";
 
-function useRefSize(key, refs) {
-  const size = ref({
-    width: 0,
-    height: 0,
-  });
-
-  onMounted(() => {
-    const el = refs[key];
-    if (!el) return;
-    const rect = el.getBoundingClientRect();
-    size.value = {
-      width: rect.width,
-      height: rect.height,
-    };
-  });
-
-  return size;
-}
+import useRefSize from "common/hooks/dom/useRefSize";
 
 export default defineComponent({
+  name: "Detail",
   setup(props, ctx) {
+    const { getUsers } = useActions(["getUsers"]);
+    const { users } = useState(["users"]);
+    getUsers();
     const size = useRefSize("p", ctx.refs);
+
+    watch(users, () => {
+      console.log(useRefSize("list", ctx.refs, true).value);
+    });
+
     return {
       cat,
       size,
+      users,
     };
   },
 });
@@ -50,14 +57,18 @@ export default defineComponent({
 .home {
   p {
     color: @red-color;
-    font-size: 16px;
+    font-size: 15px;
     margin: 0;
-    padding: 10px;
+    padding: 10px 15px;
     line-height: 24px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
   }
 
   img {
     width: 100px;
+    display: block;
   }
 }
 </style>
