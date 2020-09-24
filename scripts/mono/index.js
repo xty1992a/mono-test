@@ -29,7 +29,7 @@ function getDftEntry() {
   let scripts = [];
 
   try {
-    const dllManifest = require("../dll").getDllManifest();
+    const dllManifest = require("../dll/utils").getDllManifest();
     styles = [...(dllManifest.styles || [])];
     scripts = [...(dllManifest.scripts || [])];
   } catch (e) {

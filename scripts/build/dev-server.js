@@ -39,15 +39,17 @@ function run(options) {
     ],
     proxy,
     logLevel: "warn",
-    before(app) {
+    before(app, server, compiler) {
       app.use("/", indexMiddleware(entries));
+      app.use(htmlRedirectMiddleware(entries, server.middleware));
     },
+    hot: true,
   });
 
   const hostname = "localhost";
 
   server.listen(port, hostname, function () {
-    console.log(`"server start on http://${hostname}:${port}`);
+    console.log(`server start on http://${hostname}:${port}`);
   });
 }
 
@@ -59,6 +61,21 @@ function indexMiddleware(entries) {
         .map((it) => `<a href="/${it.name}.html">${it.name}</a>`)
         .join("<br>")
     );
+  };
+}
+
+// 将 /module-1/home --> /module-1/home.html
+function htmlRedirectMiddleware(entries, devMiddleware) {
+  const regs = entries.map(({ name }) => new RegExp(`/(${name})$`));
+  return function (req, res, next) {
+    const [path, query] = req.originalUrl.split("?");
+    if (/\.js/.test(path)) return next();
+    for (let i = 0; i < regs.length; i++) {
+      if (regs[i].test(path)) {
+        return res.redirect(`/${RegExp.$1}.html${query ? "?" + query : ""}`);
+      }
+    }
+    next();
   };
 }
 

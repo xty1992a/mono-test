@@ -51,6 +51,7 @@ module.exports = {
             css: cssLoaders,
             less: [...cssLoaders, "less-loader", useGlobalVariable()],
           },
+          hotReload: true,
         },
       },
       {

@@ -72,11 +72,6 @@ function makeDllManifest(stats) {
     "utf-8"
   );
 }
-// 获取清单
-// build时,将dll加入模板中
-function getDllManifest() {
-  return require("./manifest.json");
-}
 
 // build时,检查哪些依赖无需打包,可以排除
 function getExternals() {
@@ -96,7 +91,7 @@ function getExternals() {
 }
 
 module.exports = {
-  getDllManifest,
+  getDllManifest: require("./utils").getDllManifest,
   makeDllManifest,
   runWebpack,
   getExternals,
