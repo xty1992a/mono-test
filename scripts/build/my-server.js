@@ -7,6 +7,7 @@ const { createProxyMiddleware } = require("http-proxy-middleware");
 const LazyCompiler = require("./lazy-compiler");
 const ejs = require("ejs");
 const { mapPackageAlias } = require("../webpack-helper/useAlias");
+const NamedModulesPlugin = require("webpack/lib/NamedModulesPlugin");
 
 const base = require("../webpack.base.js");
 const utils = require("../utils");
@@ -28,7 +29,7 @@ function setupMiddleware(compiler) {
   // region 中间件
   // 开发服务器中间件
   const devMiddleware = webpackDevMiddleware(compiler, {
-    publicPath: "",
+    publicPath: "/",
     noInfo: false,
     quiet: true,
     logLevel: "warn",
@@ -41,9 +42,10 @@ function setupMiddleware(compiler) {
   });
   // hmr中间件
   const hotMiddleware = webpackHotMiddleware(compiler, {
-    log: false,
+    log: console.log,
     heartbeat: 2000,
     quiet: true,
+    reload: false,
   });
 
   const lazyMiddleware = lazyCompiler.middleware(compiler, devMiddleware);
@@ -60,11 +62,15 @@ function setupWebpack(alias) {
     output: {
       path: utils.root("output"),
       chunkFilename: "chunks/[id].js",
+      publicPath: "/",
     },
     resolve: {
       alias,
     },
-    plugins: [new webpack.HotModuleReplacementPlugin()],
+    plugins: [
+      new webpack.HotModuleReplacementPlugin(),
+      new NamedModulesPlugin(),
+    ],
   };
 
   return webpack(merge(base, devWebpackConfig));
@@ -77,8 +83,9 @@ function useProxyMiddleware(app, proxy) {
   });
 }
 
-// todo 调整publicPath，最终去掉该中间件
 // 将module-2/0.js转为/0.js的中间件
+// 已修复,不需要了
+// 但这种场景可能还存在,暂留
 function chunkRedirectMiddleware(list, devMiddleware) {
   const regs = list.map((key) => new RegExp(`/${key}(.*)`));
   return function (req, res, next) {
@@ -113,11 +120,6 @@ function run(options) {
 
   // 将入口存入懒编译器
   entries.forEach((entry) => lazyCompiler.addEntryItem(entry));
-
-  // todo 修复分包问题
-  // 暂时处理分包导致的路径不正确的问题，待修复
-  const redirectMiddleware = chunkRedirectMiddleware(packages, middleware[0]);
-  app.use(redirectMiddleware);
 
   app.listen(port, function () {
     console.log(`server listen on http://localhost:${port}`);

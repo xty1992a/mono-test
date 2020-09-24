@@ -16,6 +16,7 @@ if (PRODUCTION) {
 }
 
 const styleLoader = PRODUCTION ? MiniCssExtractPlugin.loader : "style-loader";
+const cssLoaders = [styleLoader, "css-loader", "postcss-loader"];
 
 module.exports = {
   mode: process.env.NODE_ENV,
@@ -26,46 +27,39 @@ module.exports = {
   resolve: {
     alias: {
       components: utils.packages("common/components"),
+      common: utils.packages("common"),
     },
     extensions: [".js", ".vue", ".json"],
     // modules: PRODUCTION ? ["node_modules"] : ["nodule_modules", utils.packages("dll")]
   },
+  watchOptions: {
+    ignored: /node_modules/,
+  },
   module: {
     rules: [
       {
-        test: /\.js$/,
+        test: /\.jsx?$/,
         exclude: /node_modules/,
         loader: "babel-loader",
       },
       {
         test: /\.vue$/,
         loader: "vue-loader",
+        exclude: /node_modules/,
         options: {
           loaders: {
-            css: [styleLoader, "css-loader"],
-            less: [
-              styleLoader,
-              "css-loader",
-              "postcss-loader",
-              "less-loader",
-              useGlobalVariable(),
-            ],
+            css: cssLoaders,
+            less: [...cssLoaders, "less-loader", useGlobalVariable()],
           },
         },
       },
       {
         test: /\.css$/,
-        use: [styleLoader, "css-loader", "postcss-loader"],
+        use: cssLoaders,
       },
       {
         test: /\.less$/,
-        use: [
-          styleLoader,
-          "css-loader",
-          "postcss-loader",
-          "less-loader",
-          useGlobalVariable(),
-        ],
+        use: [...cssLoaders, "less-loader", useGlobalVariable()],
       },
       {
         test: /\.(jpe?g|png|gif)$/,
