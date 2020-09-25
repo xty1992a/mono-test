@@ -1,7 +1,14 @@
+/*
+基于webpack-dev-server,无法按访问懒编译.
+因此启动之前需要询问需要编译的模块,减轻编译压力
+但应该比较稳定.暂留
+* */
+
 const webpack = require("webpack");
 const { merge } = require("webpack-merge");
 const HtmlPlugin = require("html-webpack-plugin");
 const Server = require("webpack-dev-server");
+const { createReadStream } = require("fs");
 
 const { mapPackageAlias } = require("../webpack-helper/useAlias");
 const base = require("../webpack.base.js");
@@ -41,7 +48,7 @@ function run(options) {
     logLevel: "warn",
     before(app, server, compiler) {
       app.use("/", indexMiddleware(entries));
-      app.use(htmlRedirectMiddleware(entries, server.middleware));
+      app.use(magicHtmlMiddleware(server.middleware));
     },
     hot: true,
   });
@@ -57,26 +64,34 @@ function indexMiddleware(entries) {
   return function (req, res, next) {
     if (!["/", ""].includes(req.originalUrl)) return next();
     res.send(
-      entries
-        .map((it) => `<a href="/${it.name}.html">${it.name}</a>`)
-        .join("<br>")
+      entries.map((it) => `<a href="/${it.name}">${it.name}</a>`).join("<br>")
     );
   };
 }
 
-// 将 /module-1/home --> /module-1/home.html
-function htmlRedirectMiddleware(entries, devMiddleware) {
-  const regs = entries.map(({ name }) => new RegExp(`/(${name})$`));
+// 访问入口 /module-1/home 返回 /module-1/home.html
+// dev-server内置[magicHtml feature]但不支持配置,这里实现了它的作用
+function magicHtmlMiddleware(devMiddleware) {
+  const { fileSystem: fs, getFilenameFromUrl: getFileName } = devMiddleware;
   return function (req, res, next) {
-    const [path, query] = req.originalUrl.split("?");
-    if (/\.js/.test(path)) return next();
-    for (let i = 0; i < regs.length; i++) {
-      if (regs[i].test(path)) {
-        return res.redirect(`/${RegExp.$1}.html${query ? "?" + query : ""}`);
-      }
+    const _path = req.path;
+    try {
+      const stats = getFileStats(fs, getFileName(`${_path}.js`));
+      if (!stats || !stats.isFile()) return next();
+      fs.createReadStream(getFileName(`${_path}.html`)).pipe(res);
+    } catch (e) {
+      console.log(path, e.message);
+      next();
     }
-    next();
   };
+}
+
+function getFileStats(fs, file) {
+  try {
+    return fs.statSync(file);
+  } catch (e) {
+    return null;
+  }
 }
 
 function createEntry(entries) {
@@ -88,6 +103,7 @@ function createEntry(entries) {
   }, {});
 }
 
+// 开发时也生成html
 function createHtmlPlugin(entries) {
   return entries.map((item) => {
     return new HtmlPlugin({

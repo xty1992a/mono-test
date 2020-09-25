@@ -1,3 +1,9 @@
+/*
+基于express与webpack-xx-middleware.
+启动时将所有入口缓存,首次访问时再加入编译.
+可能存在未知问题
+* */
+
 const express = require("express");
 const webpack = require("webpack");
 const { merge } = require("webpack-merge");
@@ -42,7 +48,10 @@ function setupMiddleware(compiler) {
   });
   // hmr中间件
   const hotMiddleware = webpackHotMiddleware(compiler, {
-    log: console.log,
+    log: (info) => {
+      process.stdout.write("\033[2J");
+      console.log(info);
+    },
     heartbeat: 2000,
     quiet: true,
     reload: false,
@@ -64,6 +73,7 @@ function setupWebpack(alias) {
       chunkFilename: "chunks/[id].js",
       publicPath: "/",
     },
+    devtool: "cheap-module-eval-source-map",
     resolve: {
       alias,
     },
