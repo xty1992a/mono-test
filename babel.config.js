@@ -12,5 +12,14 @@ module.exports = {
     "@babel/plugin-proposal-nullish-coalescing-operator",
     "@babel/plugin-proposal-class-properties",
     "@babel/plugin-transform-runtime",
+    [
+      "import",
+      {
+        libraryName: "vant",
+        libraryDirectory: "es",
+        style: true,
+      },
+      "vant",
+    ],
   ],
 };

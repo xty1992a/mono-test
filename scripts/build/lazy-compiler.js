@@ -52,11 +52,11 @@ class LazyCompiler {
   }
 
   indexMiddleware(req, res, next) {
-    res.send(
-      this.entryRegList
-        .map(({ name }) => `<a href="/${name}">${name}</a>`)
-        .join("<br>")
-    );
+    const list = this.entryRegList
+      .map(({ name }) => `<a href="/${name}">${name}</a>`)
+      .join("<br>");
+    const content = template.replace("{{content}}", list);
+    res.send(content);
   }
 
   // 将一个入口加入webpack编译流程
@@ -80,6 +80,17 @@ class LazyCompiler {
 
 module.exports = LazyCompiler;
 
+const template = `<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,minimum-scale=1.0,user-scalable=no">
+  <title>index</title>
+</head>
+<body>
+{{content}}
+</body>
+</html>`;
 /*
 entry item
     {
