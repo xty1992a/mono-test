@@ -16,5 +16,22 @@ module.exports = {
       changeOrigin: true,
       secure: false,
     },
+    ...platProxy(["/Business", "/api"], "https://bkchina.m.yunhuiyuan.cn"),
   },
 };
+
+function platProxy(list, target) {
+  return list.reduce((map, key) => {
+    return {
+      ...map,
+      [key]:
+        typeof target === "string"
+          ? {
+              target: target,
+              changeOrigin: true,
+              secure: false,
+            }
+          : target,
+    };
+  }, {});
+}

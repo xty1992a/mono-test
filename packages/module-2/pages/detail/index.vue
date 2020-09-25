@@ -17,7 +17,9 @@ export default {
   computed: {},
   methods: {
     async pick() {
-      import("../../common/action").then(async ({ default: action }) => {
+      import(
+        /* webpackChunkName: "person-action" */ "../../common/action"
+      ).then(async ({ default: action }) => {
         const result = await action({
           options: [
             { name: "张三", value: "zs" },

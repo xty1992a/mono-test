@@ -3,7 +3,7 @@ const log = (...args) => console.log("[request]", ...args);
 
 // 简单的深拷贝
 // 以source为模板,返回新对象,target将覆盖同名属性
-function merge(source, target) {
+export function merge(source, target) {
   return Object.keys(source).reduce(
     (map, key) => {
       let value = source[key];
