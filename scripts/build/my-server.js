@@ -12,7 +12,7 @@ const webpackHotMiddleware = require("webpack-hot-middleware");
 const { createProxyMiddleware } = require("http-proxy-middleware");
 const LazyCompiler = require("./lazy-compiler");
 const ejs = require("ejs");
-const { mapPackageAlias } = require("../webpack-helper/useAlias");
+const { mapAlias } = require("../webpack-helper/useAlias");
 const NamedModulesPlugin = require("webpack/lib/NamedModulesPlugin");
 
 const base = require("../webpack.base.js");
@@ -120,7 +120,7 @@ function chunkRedirectMiddleware(list, devMiddleware) {
 function run(options) {
   const { entries, port, packages, proxy } = options;
 
-  const alias = mapPackageAlias(packages);
+  const alias = mapAlias(packages);
   const app = setupServe();
   const compiler = setupWebpack(alias);
   const middleware = setupMiddleware(compiler);

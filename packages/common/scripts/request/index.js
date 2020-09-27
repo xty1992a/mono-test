@@ -76,6 +76,10 @@ export function create(dftConfig = {}, dftOptions = {}) {
           message: "网络异常",
           error,
         });
+        if (options.toast) {
+          options.loading && options.Toast.clear();
+          return options.Toast.toast(error.message || "网络异常");
+        }
       }
       if (options?.loading) {
         options.Toast?.clear();

@@ -1,4 +1,4 @@
-import { create } from "common/request/van-request";
+import { create } from "common/scripts/request/van-request";
 import qs from "querystring";
 
 const query = qs.parse(location.search.substr(1));
@@ -19,6 +19,7 @@ export const getList = (data) =>
       params: data,
     },
     {
+      loading: false,
       isSuccess: (res) => res.resultCode === 200,
     }
   );

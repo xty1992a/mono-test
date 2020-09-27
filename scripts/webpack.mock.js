@@ -2,6 +2,7 @@ const { merge } = require("webpack-merge");
 const utils = require("./utils");
 const base = require("./webpack.base");
 const { findPackages } = require("./build/entries");
+const { mapAlias } = require("./webpack-helper/useAlias");
 module.exports = () =>
   new Promise(async (resolve) => {
     const { success, data } = await findPackages(utils.packages("."));
@@ -9,10 +10,7 @@ module.exports = () =>
     resolve(
       merge(base, {
         resolve: {
-          alias: data.reduce((map, key) => ({
-            ...map,
-            [key]: utils.packages(key),
-          })),
+          alias: mapAlias(data),
         },
       })
     );

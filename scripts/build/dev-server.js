@@ -10,13 +10,13 @@ const HtmlPlugin = require("html-webpack-plugin");
 const Server = require("webpack-dev-server");
 const { createReadStream } = require("fs");
 
-const { mapPackageAlias } = require("../webpack-helper/useAlias");
+const { mapAlias } = require("../webpack-helper/useAlias");
 const base = require("../webpack.base.js");
 const utils = require("../utils");
 
 function run(options) {
   const { packages, entries, proxy, port } = options;
-  const alias = mapPackageAlias(packages);
+  const alias = mapAlias(packages);
   const entry = createEntry(entries);
   const plugins = createHtmlPlugin(entries);
   const config = merge(base, {
@@ -80,7 +80,7 @@ function magicHtmlMiddleware(devMiddleware) {
       if (!stats || !stats.isFile()) return next();
       fs.createReadStream(getFileName(`${_path}.html`)).pipe(res);
     } catch (e) {
-      console.log(path, e.message);
+      console.log(_path, e.message);
       next();
     }
   };

@@ -1,12 +1,12 @@
 const utils = require("../utils");
 
-// 将各package映射为全局别名
-function mapPackageAlias(packages) {
-  return packages.reduce((map, p) => {
-    return { ...map, [p]: utils.packages(p) };
+// 将数组map为一个新对象,值为末梢为每个item的路径
+function mapAlias(directories, road = utils.packages) {
+  return directories.reduce((map, p) => {
+    return { ...map, [p]: road(p) };
   }, {});
 }
 
 module.exports = {
-  mapPackageAlias,
+  mapAlias,
 };

@@ -9,6 +9,7 @@ const { CleanWebpackPlugin } = require("clean-webpack-plugin");
 const { BundleAnalyzerPlugin } = require("webpack-bundle-analyzer");
 const CopyPlugin = require("copy-webpack-plugin");
 const fse = require("fs-extra");
+const { mapAlias } = require("../webpack-helper/useAlias");
 /*
 输入模块名数组，依次使用webpack打包模块
 模块入口由模块下的mono.config.js指定
@@ -56,7 +57,7 @@ function createWebpackConfig(
 ) {
   const moduleDir = utils.packages(module);
   const entry = {};
-
+  const alias = mapAlias([module]);
   const plugins = [new CleanWebpackPlugin()];
 
   if (report) {
@@ -102,9 +103,7 @@ function createWebpackConfig(
       publicPath: `/dist/${module}/`,
     },
     resolve: {
-      alias: {
-        [module]: utils.packages(module),
-      },
+      alias,
     },
     plugins: [...plugins],
   });

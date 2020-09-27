@@ -16,11 +16,11 @@ module.exports = {
       changeOrigin: true,
       secure: false,
     },
-    ...platProxy(["/Business", "/api"], "https://bkchina.m.yunhuiyuan.cn"),
+    ...mapProxy(["/Business", "/api"], "http://bkchina.m.yunhuiyuan.cn"),
   },
 };
 
-function platProxy(list, target) {
+function mapProxy(list, target) {
   return list.reduce((map, key) => {
     return {
       ...map,

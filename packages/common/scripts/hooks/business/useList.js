@@ -1,14 +1,8 @@
 import { watch, ref } from "@vue/composition-api";
-import { Toast } from "vant";
 
 const dftOptions = {
   isFinished: (query, res) => dftOptions.getList(res).length !== query.pageSize,
   getList: (result) => result.data || [],
-  Toast: {
-    loading: Toast.loading,
-    clear: Toast.clear,
-    toast: Toast,
-  },
 };
 
 export default function useList(searchQuery, request, options = {}) {
@@ -23,11 +17,12 @@ export default function useList(searchQuery, request, options = {}) {
     searchQuery,
     async (now) => {
       loading.value = true;
-      options.Toast.loading();
       const result = await request(now);
-      options.Toast.clear();
       loading.value = false;
-      if (!result.success) return;
+      if (!result.success) {
+        finished.value = true;
+        return;
+      }
       finished.value = options.isFinished(now, result);
       list.value = list.value.concat(options.getList(result));
     },

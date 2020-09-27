@@ -3,6 +3,7 @@ const VueLoader = require("vue-loader/lib/plugin-webpack4");
 const PRODUCTION = process.env.NODE_ENV === "production";
 const IS_DLL = process.env.BUILD_TYPE === "dll";
 const MiniCssExtractPlugin = require("mini-css-extract-plugin");
+const { mapAlias } = require("./webpack-helper/useAlias");
 
 const plugins = [new VueLoader()];
 
@@ -17,6 +18,14 @@ if (PRODUCTION) {
 
 const styleLoader = PRODUCTION ? MiniCssExtractPlugin.loader : "style-loader";
 const cssLoaders = [styleLoader, "css-loader", "postcss-loader"];
+// common中的别名
+const commonAlias = () => {
+  const common = (p) => utils.packages(`common/${p}`);
+  return {
+    common: common("."),
+    ...mapAlias(["components", "scripts"], common),
+  };
+};
 
 module.exports = {
   mode: process.env.NODE_ENV,
@@ -26,11 +35,9 @@ module.exports = {
   devtool: "source-map",
   resolve: {
     alias: {
-      components: utils.packages("common/components"),
-      common: utils.packages("common"),
+      ...commonAlias(),
     },
     extensions: [".js", ".vue", ".json"],
-    // modules: PRODUCTION ? ["node_modules"] : ["nodule_modules", utils.packages("dll")]
   },
   watchOptions: {
     ignored: /node_modules/,
