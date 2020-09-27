@@ -5,12 +5,14 @@ import "module-1/icons";
 import "./ui";
 import store from "./store";
 import App from "./index.vue";
+import eruda from "eruda";
+eruda.init();
 
-import { login } from "./api";
-login({
-  cardId: "1",
-  password: "888888",
-});
+// import { login } from "./api";
+// login({
+//   cardId: "1",
+//   password: "888888",
+// });
 
 new Vue({
   store,

@@ -8,5 +8,7 @@
   "keywords": [],
   "author": "",
   "license": "ISC",
-  "dependencies": {}
+  "dependencies": {
+    "eruda": "2.4.0"
+  }
 }

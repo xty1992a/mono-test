@@ -1,3 +1,6 @@
 import Vue from "vue";
-import { Row, Col, CellGroup, Cell, List } from "vant";
-[Row, Col, CellGroup, Cell, List].forEach((c) => Vue.use(c));
+import AspectRatio from "components/AspectRatio";
+import { Row, Col, CellGroup, Cell, List, Divider } from "vant";
+[Row, Col, CellGroup, Cell, List, Divider].forEach((c) => Vue.use(c));
+
+Vue.component(AspectRatio.name, AspectRatio);

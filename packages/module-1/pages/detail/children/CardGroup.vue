@@ -1,7 +1,9 @@
 <template>
   <div class="card-group">
-    <h3 class="card-group_name">{{ data.name }}</h3>
-    <van-row :gutter="10">
+    <van-divider class="card-group_name"
+      ><span>{{ data.name }}</span></van-divider
+    >
+    <van-row>
       <van-col :span="12" v-for="item in data.goodsItem" :key="item.guid">
         <Card :data="item" />
       </van-col>
@@ -33,9 +35,18 @@ export default {
 .card-group {
   .card-group_name {
     text-align: center;
+    font-weight: 500;
+    font-size: 17px;
+    color: #333;
+    margin: 10px 0;
   }
+  /*van的布局组件gutter计算存在问题*/
   .van-col {
+    padding: 0 5px;
     margin-bottom: 10px;
+  }
+  .van-row {
+    margin: 0 -5px;
   }
 }
 </style>

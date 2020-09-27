@@ -27,10 +27,12 @@
 @border-radius-small: 4px;
 @border-radius-mini: 2px;
 
-.multi-line(@line) {
+.multi-line(@line, @line-height) {
   overflow: hidden;
   text-overflow: ellipsis;
   display: -webkit-box;
   -webkit-line-clamp: @line;
   -webkit-box-orient: vertical;
+  line-height: @line-height;
+  height: @line * @line-height * 1em;
 }
