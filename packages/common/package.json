@@ -11,5 +11,6 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "throttle-debounce": "2.3.0"
   }
 }

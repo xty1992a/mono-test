@@ -6,6 +6,7 @@ module.exports = {
         modules: false,
       },
     ],
+    "@vue/babel-preset-jsx",
   ],
   plugins: [
     "@babel/plugin-proposal-optional-chaining",

@@ -3,25 +3,25 @@
     <van-list v-model="loading" :finished="finished" @load="onLoad">
       <CardGroup v-for="item in list" :data="item" :key="item.guid" />
     </van-list>
+    <Backtop :hide="scrollTop < 300" bottom="30px" />
   </div>
 </template>
 
 <script>
-import { defineComponent, watch, ref } from "@vue/composition-api";
-import { useState, useActions } from "vuex-composition-helpers";
+import { defineComponent, ref } from "@vue/composition-api";
 import useList from "scripts/hooks/business/useList";
+import useScrollTop from "scripts/hooks/dom/useScrollTop";
 import * as API from "./api";
 import CardGroup from "./children/CardGroup";
+import Backtop from "components/Backtop/BackTop";
 
 export default defineComponent({
   name: "Detail",
-  components: { CardGroup },
+  components: { CardGroup, Backtop },
   setup(props, ctx) {
     const query = ref({ pageIndex: 1, pageSize: 3 });
     const { loading, finished, list } = useList(query, API.getList);
-    const { users } = useState(["users"]);
-    const { getUsers } = useActions(["getUsers"]);
-    // setTimeout(getUsers, 2000);
+    const { scrollTop } = useScrollTop();
 
     const onLoad = () => {
       if (finished.value) return;
@@ -33,6 +33,7 @@ export default defineComponent({
       loading,
       finished,
       onLoad,
+      scrollTop,
     };
   },
 });
