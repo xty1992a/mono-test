@@ -1,44 +1,44 @@
 <template>
-  <div class="card">
-    <AspectRatio class="card_img">
-      <img :src="data.imagePath" alt="" />
-    </AspectRatio>
+  <a :href="`/shop/home?bid=${bid}`">
+    <div class="card">
+      <AspectRatio class="card_img">
+        <img :src="data.imagePath" alt="" />
+      </AspectRatio>
 
-    <div class="card_content">
-      <div class="card_top">
-        <p class="card_name">{{ data.name }}</p>
-        <div class="cart-icon"></div>
-      </div>
-      <div class="card_bottom">
-        <div class="card_price"><span>￥</span>{{ data.marketPrice }}</div>
-        <div class="card_sale-count">已售: {{ data.sellCount }}</div>
+      <div class="card_content">
+        <div class="card_top">
+          <p class="card_name">{{ data.name }}</p>
+          <div class="cart-icon"></div>
+        </div>
+        <div class="card_bottom">
+          <div class="card_price"><span>￥</span>{{ data.marketPrice }}</div>
+          <div class="card_sale-count">已售: {{ data.sellCount }}</div>
+        </div>
       </div>
     </div>
-  </div>
+  </a>
 </template>
 
 <script>
+import qs from "querystring";
 export default {
   name: "card",
   components: {},
   props: {
     data: Object,
   },
-  data() {
-    return {};
+  setup() {
+    const { bid } = qs.parse(location.search.substr(1));
+    return { bid };
   },
-  computed: {},
-  methods: {},
-  watch: {},
-  created() {},
-  mounted() {},
-  beforeDestroy() {},
 };
 </script>
 
 <style lang="less" rel="stylesheet/less">
 .card {
   background-color: #fff;
+  text-decoration: none;
+  color: #333;
   img {
     width: 100%;
     height: 100%;

@@ -1,18 +1,23 @@
 <template>
   <div class="home">
+    <a :href="`/shop/goodsList?bid=${bid}`">商城首页</a>
     <p>home page</p>
     <p>home page</p>
   </div>
 </template>
 
 <script>
-import { add, sleep } from "module-1/common/utils";
+import { add, sleep } from "shop/common/utils";
+import qs from "querystring";
 export default {
   name: "home",
   components: {},
   props: {},
   data() {
-    return {};
+    const { bid } = qs.parse(location.search.substr(1));
+    return {
+      bid,
+    };
   },
   computed: {},
   methods: {},
