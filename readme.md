@@ -32,18 +32,26 @@
 
 ## 配置
 
+### scripts 下的 mono.config.js
+
+该配置指定了全局 cli 的一些配置.
+目前可配置项如下
+
+|  属性 |   类型 |   默认值 |                                                         描述 |
+| ----: | -----: | -------: | -----------------------------------------------------------: |
+| alias | object | 详见文件 | 指定了 package 下的 mono.config 可用的别名,非 webpack.config |
+| proxy | object | 详见文件 |                                    配置 dev 服务器的代理接口 |
+| entry | object | 详见文件 |                                配置全局 package 的默认 entry |
+
 ### package 下的 mono.config.js
 
-默认情况下,每个 package 都会按照`/scripts/mono/index`中`getDftEntry`指定的配置生成 entry.
-如果在 package 下的添加了`mono.config.js`,将使用该文件提供的配置与默认配置合并生成该 package 的 entry.
+默认情况下,每个 package 都会按照`/scripts/mono/index`中`getDftEntry`指定的配置生成 entry.  
+如果在 package 目录下添加了`mono.config.js`,将使用该文件提供的配置与默认配置合并生成该 package 的 entry.
 可配置项如下
 
 |     属性 |     类型 |                                   默认值 |                                                     描述 |
 | -------: | -------: | ---------------------------------------: | -------------------------------------------------------: |
-|   output |   string |                "@output/[name]/build.js" |                                              js 输出路径 |
 |     html |   string |             "@view/[module]/[name].html" |                                            html 输出路径 |
 | template |   string | "@packages/common/template/template.ejs" |                                                html 模版 |
 |   styles | string[] |                               dll.styles | 加到 head 中的 link 标签资源路径 ， 指定 template 时无效 |
 |  scripts | string[] |                              dll.scripts |                       加到 head 中的 script 标签资源路径 |
-
-其中

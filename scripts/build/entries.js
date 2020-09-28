@@ -31,7 +31,7 @@ async function createConfig(module) {
     const local = await createLocalConfig(localCfg);
     config = fmtConfig({ module, ...local });
   } else {
-    config = createDftConfig(module);
+    config = await createDftConfig(module);
   }
   return config;
 }

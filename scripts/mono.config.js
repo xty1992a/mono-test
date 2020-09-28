@@ -18,6 +18,7 @@ module.exports = {
     },
     ...mapProxy(["/Business", "/api"], "http://bkchina.m.yunhuiyuan.cn"),
   },
+  // 默认entry
   entry() {
     let styles = [];
     let scripts = [];
@@ -31,7 +32,6 @@ module.exports = {
     }
 
     return {
-      output: "@output/[name]/build.js", // js输出路径
       html: "@view/[module]/[name].html", // html输出路径
       template: "@packages/common/template/template.ejs", // html模版
       styles, // 加到head中的link标签资源路径 ， 指定template时无效
