@@ -91,7 +91,6 @@ function getExternals() {
 }
 
 module.exports = {
-  getDllManifest: require("./utils").getDllManifest,
   makeDllManifest,
   runWebpack,
   getExternals,

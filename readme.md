@@ -29,3 +29,21 @@
 > cli 如何搜寻入口?  
 > 默认搜寻一个 package 下的 pages 目录,该目录下的每个文件夹都视作一个入口
 > 你还可以添加`mono.config.js`,来指定入口
+
+## 配置
+
+### package 下的 mono.config.js
+
+默认情况下,每个 package 都会按照`/scripts/mono/index`中`getDftEntry`指定的配置生成 entry.
+如果在 package 下的添加了`mono.config.js`,将使用该文件提供的配置与默认配置合并生成该 package 的 entry.
+可配置项如下
+
+|     属性 |     类型 |                                   默认值 |                                                     描述 |
+| -------: | -------: | ---------------------------------------: | -------------------------------------------------------: |
+|   output |   string |                "@output/[name]/build.js" |                                              js 输出路径 |
+|     html |   string |             "@view/[module]/[name].html" |                                            html 输出路径 |
+| template |   string | "@packages/common/template/template.ejs" |                                                html 模版 |
+|   styles | string[] |                               dll.styles | 加到 head 中的 link 标签资源路径 ， 指定 template 时无效 |
+|  scripts | string[] |                              dll.scripts |                       加到 head 中的 script 标签资源路径 |
+
+其中
