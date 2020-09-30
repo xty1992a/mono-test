@@ -6,8 +6,8 @@ import "./ui";
 import store from "./store";
 import App from "./index.vue";
 
-import eruda from "eruda";
-eruda.init();
+// import eruda from "eruda";
+// eruda.init();
 
 // import { login } from "./api";
 // login({

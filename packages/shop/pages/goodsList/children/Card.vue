@@ -1,14 +1,17 @@
 <template>
   <a :href="`/shop/home?bid=${bid}`">
     <div class="card">
-      <AspectRatio class="card_img">
+      <AspectRatio class="card_img" :ratio="cfg.image_ratio">
         <img :src="data.imagePath" alt="" />
       </AspectRatio>
 
       <div class="card_content">
         <div class="card_top">
           <p class="card_name">{{ data.name }}</p>
-          <div class="cart-icon"></div>
+          <div class="cart-icon" @click.prevent.stop="onClick">
+            <van-icon name="shopping-cart-o" />
+            <van-icon name="add" color="#ff6400" class="cart-icon_sup" />
+          </div>
         </div>
         <div class="card_bottom">
           <div class="card_price"><span>￥</span>{{ data.marketPrice }}</div>
@@ -21,15 +24,24 @@
 
 <script>
 import qs from "querystring";
+const dftConfig = {
+  image_ratio: 1,
+};
+
 export default {
   name: "card",
   components: {},
   props: {
     data: Object,
+    config: Object,
   },
-  setup() {
+  setup(props, ctx) {
+    const cfg = { ...(props.config || {}), ...dftConfig };
     const { bid } = qs.parse(location.search.substr(1));
-    return { bid };
+    return {
+      bid,
+      cfg,
+    };
   },
 };
 </script>
@@ -55,9 +67,21 @@ export default {
       .card_name {
         .multi-line(2, 1.5);
         font-size: 14px;
+        flex: 1;
       }
       .cart-icon {
-        width: 4em;
+        width: 1em;
+        text-align: right;
+        position: relative;
+        margin-top: 2px;
+        .cart-icon_sup {
+          position: absolute;
+          right: 0;
+          top: 0;
+          font-size: 12px;
+          transform: scale(0.9) translate(30%, -20%);
+          background-color: #fff;
+        }
       }
     }
     .card_bottom {

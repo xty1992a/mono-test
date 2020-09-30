@@ -8,7 +8,7 @@
     <van-swipe
       class="ad-swipe"
       :autoplay="3000"
-      indicator-color="white"
+      indicator-color="#ff6400"
       v-if="data.advertises"
     >
       <van-swipe-item v-for="it in data.advertises" :key="it.imagePath">
@@ -36,9 +36,9 @@
 
 <script>
 import * as API from "../../api";
-import { defineComponent, reactive, ref } from "@vue/composition-api";
+import { defineComponent, ref } from "@vue/composition-api";
 import ImageTextAd from "./ImageTextAd";
-const sleep = (time) => new Promise((resolve) => setTimeout(resolve, time));
+import useUntil from "scripts/hooks/business/useUntil";
 
 export default defineComponent({
   name: "PageHead",
@@ -46,30 +46,15 @@ export default defineComponent({
   props: {},
   setup(props, { emit }) {
     const data = ref({});
-
-    const load = ref(false);
-
-    function onLoad() {
-      load.value = true;
-    }
-
-    async function waitLoad(max_count = 5) {
-      while (1 && max_count) {
-        max_count--;
-        await sleep(20);
-        if (load.value) break;
-      }
-    }
+    const { onDone: onLoad, until: untilAdLoad } = useUntil();
 
     async function fetchData() {
       const result = await API.getHeadData();
       if (!result.success) return;
       data.value = result.data;
-      emit("load");
     }
 
-    Promise.all([fetchData(), waitLoad()]).then(() => {
-      console.log("head所有接口加载完毕");
+    Promise.all([fetchData(), untilAdLoad()]).then((res) => {
       emit("load");
     });
 
@@ -86,6 +71,7 @@ export default defineComponent({
   margin: -10px -10px 10px;
   padding-top: 40px;
   box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+  background-color: #fff;
 
   .search-bar {
     z-index: 1;
@@ -120,7 +106,6 @@ export default defineComponent({
   .notice-bar {
     display: flex;
     height: 35px;
-    background: #fff;
     .left-icon {
       height: 100%;
       max-width: 100px;

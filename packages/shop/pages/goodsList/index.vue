@@ -10,51 +10,68 @@
       <CardGroup v-for="item in list" :data="item" :key="item.guid" />
     </van-list>
     <div class="holder"></div>
-    <Backtop :hide="scrollTop < 300" bottom="30px" />
+    <Backtop :hide="scrollTop < 300" />
+    <Menubar :menus="menus" />
   </div>
 </template>
 
 <script>
-import { defineComponent, ref, watch } from "@vue/composition-api";
+import { defineComponent, ref, computed } from "@vue/composition-api";
 import useCacheList from "scripts/hooks/business/useCacheList";
 import useScrollTop from "scripts/hooks/dom/useScrollTop";
 import * as API from "./api";
 import CardGroup from "./children/CardGroup";
 import PageHead from "./children/PageHead";
+import Menubar from "shop/common/components/Menubar";
 import Backtop from "components/Backtop/BackTop";
+import { SHOP_MENUS } from "shop/common/constants";
+const icons = {
+  home: "wap-home",
+  category: "notes",
+  cart: "shopping-cart",
+  orders: "orders",
+};
 
 export default defineComponent({
   name: "Detail",
-  components: { CardGroup, Backtop, PageHead },
+  components: { CardGroup, Backtop, PageHead, Menubar },
   setup(props, ctx) {
     const query = ref({ pageSize: 3 });
     const key = "shop_goods_list";
     const topKey = key + "_scroll";
-    const top = sessionStorage.getItem(topKey);
+    const shopCart = 10;
 
+    const menus = computed(() =>
+      SHOP_MENUS.map((it) => ({
+        ...it,
+        icon: icons[it.key] + "-o",
+        activeIcon: icons[it.key],
+        active: it.key === "home",
+        badge: it.key === "cart" ? shopCart : undefined,
+      }))
+    );
     const { loading, finished, list, params } = useCacheList({
       params: query,
       request: API.getList,
       key,
     });
 
-    const { scrollTop } = useScrollTop();
+    const { scrollTop, cacheTop } = useScrollTop({ cacheKey: topKey });
 
     async function onHeadLoad() {
-      if (top) {
-        await ensureScrollTop(+top);
-      }
-      watch(scrollTop, (now) => {
-        sessionStorage.setItem(topKey, now);
-      });
+      // head加载完成会改变高度,导致位置还原不正确
+      if (cacheTop === -1) return;
+      ensureScrollTop(cacheTop);
     }
 
-    const onLoad = () => {
+    function onLoad() {
       if (finished.value) return;
       params.value.pageIndex++;
-    };
+    }
+
     return {
       list,
+      menus,
       loading,
       finished,
       scrollTop,
@@ -65,6 +82,7 @@ export default defineComponent({
 });
 
 const sleep = (time) => new Promise((resolve) => setTimeout(resolve, time));
+
 async function ensureScrollTop(top, max_count = 5) {
   while (1 && max_count) {
     max_count--;
@@ -81,6 +99,7 @@ async function ensureScrollTop(top, max_count = 5) {
   min-height: 100vh;
   box-sizing: border-box;
   padding: 10px;
+
   .holder {
     height: 50px;
   }

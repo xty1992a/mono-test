@@ -19,13 +19,18 @@ export default {
       type: Number,
       default: 100,
     },
+    // height / width
     ratio: {
-      type: String,
+      type: [Number, String],
     },
   },
   computed: {
     paddingTop() {
-      if (this.ratio) return this.ratio;
+      if (this.ratio !== undefined) {
+        return typeof this.ratio === "string"
+          ? this.ratio
+          : this.ratio * 100 + "%";
+      }
       return ((this.height / this.width) * 100).toFixed(2) + "%";
     },
   },
